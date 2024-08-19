@@ -15,8 +15,8 @@ void HalfAdder(TFHEpp::TLWE<TFHEpp::lvl1param>& sum,
                const TFHEpp::TLWE<TFHEpp::lvl1param>& cb,
                const TFHEpp::EvalKey& ek)
 {
-    HomXOR<iksP, brP, brP::targetP::mu>(sum, ca, cb, ek);
-    HomAND<iksP, brP, brP::targetP::mu>(carry, ca, cb, ek);
+    TFHEpp::HomXOR<iksP, brP, brP::targetP::mu>(sum, ca, cb, ek);
+    TFHEpp::HomAND<iksP, brP, brP::targetP::mu>(carry, ca, cb, ek);
 }
 
 // elementary full comparator gate that is used to compare the i-th bit:
