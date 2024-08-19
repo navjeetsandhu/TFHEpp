@@ -22,7 +22,7 @@ int main()
     };
 
     // decrypt and print plaintext answer
-    std::vector<uint8_t> p = bootsSymDecrypt<TFHEpp::lvl1param>(result, sk);
+    std::vector<uint8_t> p = TFHEpp::bootsSymDecrypt<TFHEpp::lvl1param>(result, sk);
     if (p[0])
         std::cout << "Equall!" << std::endl;
     else {
