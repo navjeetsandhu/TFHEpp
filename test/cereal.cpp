@@ -5,6 +5,10 @@
 
 int main()
 {
+    // create a secret key.  Fully homomorphic encryption (FHE) allows computation
+    // on encrypted data (ciphertext) without needing to decrypt it first.
+    // The results of this computation are then encrypted and can be later
+    // decrypted with the respective secret key.
     TFHEpp::SecretKey sk;
     {
         {
@@ -42,9 +46,18 @@ int main()
     }
 
     {
+        //create an Evaluation Key, ek, using the Secret Key sk.
         TFHEpp::EvalKey ek(sk);
+        // creates and sets values for a Bootstrapping Key FFT (Fast Fourier Transform)
+        // inside our ek. It is based on the secret key sk and parameter set lvl01param.
         ek.emplacebkfft<TFHEpp::lvl01param>(sk);
+        //create and set values for a Bootstrapping Key NTT (Number Theoretic Transform) in ek object.
         ek.emplacebkntt<TFHEpp::lvl01param>(sk);
+
+        //use the secret key sk to create a Level-1 to Level-0 identity key switch key (IKS Key).
+        //dentity Key Switching (IKS) are techniques used in homomorphic encryption to translate
+        // between different encryption keys. In this case, it is creating a key that will translate
+        // ciphertext encrypted with a Level-1 key into ciphertext encrypted with a Level-0 key.
         ek.emplaceiksk<TFHEpp::lvl10param>(sk);
         {
             std::ofstream ofs{"./gatekey.key", std::ios::binary};
