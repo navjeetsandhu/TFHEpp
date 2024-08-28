@@ -55,9 +55,9 @@ int main()
         ar(clientcipher);
     }
 
-    // get cloutd input
+    // get cloud input
     uint16_t cloud_input;
-    std::cout << "Type cloud input (16bit unsigned interger)" << std::endl;
+    std::cout << "Type cloud input (16bit unsigned integer)" << std::endl;
     std::cin >> cloud_input;
 
     // encrypt the input (trivial cypher)
