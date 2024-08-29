@@ -29,6 +29,31 @@ inline void HomGate(TLWE<typename brP::targetP> &res,
     GateBootstrapping<iksP, brP, mu>(res, res, ek);
 }
 
+template <class brP, typename brP::targetP::T mu, class iksP, int casign,
+            int cbsign, std::make_signed_t<typename brP::domainP::T> offset>
+inline void HomGateNTT(TLWE<typename iksP::targetP> &res,
+                        const TLWE<typename brP::domainP> &ca,
+                        const TLWE<typename brP::domainP> &cb, const EvalKey &ek)
+{
+        for (int i = 0; i <= brP::domainP::k * brP::domainP::n; i++)
+            res[i] = casign * ca[i] + cbsign * cb[i];
+        res[brP::domainP::k * brP::domainP::n] += offset;
+        GateBootstrappingNTT<brP, mu, iksP>(res, res, ek);
+}
+
+template <class iksP, class brP, typename brP::targetP::T mu, int casign,
+            int cbsign, std::make_signed_t<typename iksP::domainP::T> offset>
+inline void HomGateNTT(TLWE<typename brP::targetP> &res,
+                        const TLWE<typename iksP::domainP> &ca,
+                        const TLWE<typename iksP::domainP> &cb, const EvalKey &ek)
+{
+        for (int i = 0; i <= iksP::domainP::k * iksP::domainP::n; i++)
+            res[i] = casign * ca[i] + cbsign * cb[i];
+        res[iksP::domainP::k * iksP::domainP::n] += offset;
+        GateBootstrappingNTT<iksP, brP, mu>(res, res, ek);
+}
+
+
 // No input
 template <class P = lvl1param>
 void HomCONSTANTONE(TLWE<P> &res)
