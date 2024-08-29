@@ -12,7 +12,7 @@ int main()
     std::uniform_int_distribution<uint32_t> binary(0, 1);
 
     using iksP = TFHEpp::lvl10param;
-    using bkP = TFHEpp::lvl02param;
+    using bkP = TFHEpp::lvl01param;  // or TFHEpp::lvl02param;
 
     TFHEpp::SecretKey sk;
     TFHEpp::EvalKey ek;
