@@ -261,7 +261,7 @@ void GateBootstrapping(TLWE<typename iksP::domainP> &res,
 }
 
 template <class bkP, typename bkP::targetP::T mu, class iksP>
-void GateBootstrappingNTT(TLWE<typename iksP::tagetP> &res,
+void GateBootstrappingNTT(TLWE<typename iksP::targetP> &res,
                           const TLWE<typename bkP::domainP> &tlwe,
                           const EvalKey &ek)
 {
