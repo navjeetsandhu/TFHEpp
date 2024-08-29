@@ -21,4 +21,4 @@ void HomNAND(TLWE<typename brP::targetP> &res, const TLWE<typename iksP::domainP
 The difference between these two definition is that the order of Identity Key Switching and Blind Rotate. This will effect the noise growth of the operation. If you are not sure about the TFHE's theory, the lower one is recommended because it causes lower error growth. 
 There are 4 inputs for this function, `res,ca,cb,ek`. 
 `res` is  the ciphertext to store the result. `ca` and `cb` are input ciphertexts. `ek` is the evaluation key. 
-You may wonder about the existence of the gates followed by `YN` or `NY` like `ANDYN`. These gate will negate one of thire inputs. For example, `ANDYN` is equivalent to `~a&b`. This kind of gates will be used in the synthesis tools like [Yosys](https://github.com/YosysHQ/yosys). 
+You may wonder about the existence of the gates followed by `YN` or `NY` like `ANDYN`. These gate will negate one of there inputs. For example, `ANDYN` is equivalent to `~a&b`. This kind of gates will be used in the synthesis tools like [Yosys](https://github.com/YosysHQ/yosys). 
