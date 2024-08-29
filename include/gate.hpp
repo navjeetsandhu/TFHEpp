@@ -90,6 +90,7 @@ void HomNAND(TLWE<typename iksP::targetP> &res,
 {
     HomGate<brP, mu, iksP, -1, -1, brP::domainP::mu>(res, ca, cb, ek);
 }
+
 template <class iksP = lvl10param, class brP = lvl01param,
           typename brP::targetP::T mu = lvl1param::mu>
 void HomNAND(TLWE<typename brP::targetP> &res,
@@ -97,6 +98,24 @@ void HomNAND(TLWE<typename brP::targetP> &res,
              const TLWE<typename iksP::domainP> &cb, const EvalKey &ek)
 {
     HomGate<iksP, brP, mu, -1, -1, iksP::domainP::mu>(res, ca, cb, ek);
+}
+
+template <class brP = lvl01param, typename brP::targetP::T mu = lvl1param::mu,
+            class iksP = lvl10param>
+void HomNAND_NTT(TLWE<typename iksP::targetP> &res,
+                 const TLWE<typename brP::domainP> &ca,
+                 const TLWE<typename brP::domainP> &cb, const EvalKey &ek)
+{
+    HomGateNTT<brP, mu, iksP, -1, -1, brP::domainP::mu>(res, ca, cb, ek);
+}
+
+template <class iksP = lvl10param, class brP = lvl01param,
+            typename brP::targetP::T mu = lvl1param::mu>
+void HomNAND_NTT(TLWE<typename brP::targetP> &res,
+                 const TLWE<typename iksP::domainP> &ca,
+                 const TLWE<typename iksP::domainP> &cb, const EvalKey &ek)
+{
+    HomGateNTT<iksP, brP, mu, -1, -1, iksP::domainP::mu>(res, ca, cb, ek);
 }
 
 template <class brP = lvl01param, typename brP::targetP::T mu = lvl1param::mu,

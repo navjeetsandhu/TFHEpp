@@ -36,6 +36,19 @@ TFHEPP_EXPLICIT_INSTANTIATION_GATE_BRIKS(INST)
 #undef INST
 
 #define INST(iksP, brP, mu)                                                \
+    extern template void HomNAND_NTT<iksP, brP, mu>(TLWE<typename brP::targetP> &res, \
+                                        const TLWE<typename iksP::domainP> &ca, \
+                                        const TLWE<typename iksP::domainP> &cb, const EvalKey &ek)
+    TFHEPP_EXPLICIT_INSTANTIATION_GATE_IKSBR(INST)
+#undef INST
+#define INST(brP, mu, iksP)                                                \
+    extern template void HomNAND_NTT<brP, mu, iksP>(TLWE<typename iksP::targetP> &res, \
+                                        const TLWE<typename brP::domainP> &ca, \
+                                        const TLWE<typename brP::domainP> &cb, const EvalKey &ek)
+    TFHEPP_EXPLICIT_INSTANTIATION_GATE_BRIKS(INST)
+#undef INST
+
+#define INST(iksP, brP, mu)                                                \
     extern template void HomNOR<iksP, brP, mu>(TLWE<typename brP::targetP> &res, \
                                         const TLWE<typename iksP::domainP> &ca, \
                                         const TLWE<typename iksP::domainP> &cb, const EvalKey &ek)
