@@ -51,7 +51,7 @@ int main()
 #endif
     pres = bootsSymDecrypt(cres, *sk);
     for (int i = 0; i < num_test; i++) assert(pres[i] == !(pa[i] & pb[i]));
-    cout << "Passed" << endl;
+    cout << "Passed NTT test" << endl;
     double elapsed =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();
