@@ -467,6 +467,41 @@ void HomMUX(TLWE<P> &res, const TLWE<P> &cs, const TLWE<P> &c1,
         res[P::k * P::n] += P::mu;
     }
 }
+
+
+template <class P = lvl1param>
+void HomMUX_NTT(TLWE<P> &res, const TLWE<P> &cs, const TLWE<P> &c1,
+                const TLWE<P> &c0, const EvalKey &ek)
+{
+    TLWE<P> temp;
+    for (int i = 0; i <= P::k * P::n; i++) temp[i] = cs[i] + c1[i];
+    for (int i = 0; i <= P::k * P::n; i++) res[i] = -cs[i] + c0[i];
+    temp[P::k * P::n] -= P::mu;
+    res[P::k * P::n] -= P::mu;
+    if constexpr (std::is_same_v<P, lvl1param>) {
+        TLWE<lvl0param> and1, and0;
+        IdentityKeySwitch<lvl10param>(and1, temp, *ek.iksklvl10);
+        IdentityKeySwitch<lvl10param>(and0, res, *ek.iksklvl10);
+        GateBootstrappingTLWE2TLWENTT<lvl01param>(
+                temp, and1, *ek.bknttlvl01, mupolygen<lvl1param, lvl1param::mu>());
+        GateBootstrappingTLWE2TLWENTT<lvl01param>(
+                res, and0, *ek.bknttlvl01, mupolygen<lvl1param, lvl1param::mu>());
+        for (int i = 0; i <= P::k * lvl1param::n; i++) res[i] += temp[i];
+        res[P::k * P::n] += P::mu;
+    }
+    else if constexpr (std::is_same_v<P, lvl0param>) {
+        TLWE<lvl1param> and1, and0;
+        GateBootstrappingTLWE2TLWENTT<lvl01param>(
+                and1, temp, *ek.bknttlvl01, mupolygen<lvl1param, lvl1param::mu>());
+        GateBootstrappingTLWE2TLWENTT<lvl01param>(
+                and0, res, *ek.bknttlvl01, mupolygen<lvl1param, lvl1param::mu>());
+        for (int i = 0; i <= lvl1param::k * lvl1param::n; i++)
+            and0[i] += and1[i];
+        IdentityKeySwitch<lvl10param>(res, and0, *ek.iksklvl10);
+        res[P::k * P::n] += P::mu;
+    }
+}
+
 template <class P = lvl1param>
 void HomNMUX(TLWE<P> &res, const TLWE<P> &cs, const TLWE<P> &c1,
              const TLWE<P> &c0, const EvalKey &ek)

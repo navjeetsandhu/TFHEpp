@@ -170,6 +170,8 @@ void RunTest()
                 XorChegk, p, cres, c, kNumTests, *sk, ek);
         Test<P>("XNOR_NTT", TFHEpp::HomXNOR_NTT<lvl01param, lvl1param::mu, lvl10param>,
                 XnorChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("MUX_NTT", TFHEpp::HomMUX_NTT<P>, MuxChegk, p, cres, c, kNumTests, *sk,
+                ek);
     }
     else if constexpr (std::is_same_v<P, lvl1param>) {
         cout << "lvl1param" << endl;
@@ -192,6 +194,8 @@ void RunTest()
                 XorChegk, p, cres, c, kNumTests, *sk, ek);
         Test<P>("XNOR_NTT", TFHEpp::HomXNOR_NTT<lvl10param, lvl01param, lvl1param::mu>,
                 XnorChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("MUX_NTT", TFHEpp::HomMUX_NTT<P>, MuxChegk, p, cres, c, kNumTests, *sk,
+                ek);
     }
 }
 

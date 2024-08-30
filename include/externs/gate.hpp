@@ -297,6 +297,15 @@ INST(lvl1param);
 INST(lvl0param);
 #undef INST
 
+#define INST(P)                                                   \
+    extern template void HomMUX_NTT<P>(TLWE<P> & res, const TLWE<P> &cs,     \
+                            const TLWE<P> &c1, const TLWE<P> &c0, \
+                            const EvalKey &ek)
+    INST(lvl1param);
+    INST(lvl0param);
+#undef INST
+
+
 #define INST(P)                                                    \
     extern template void HomNMUX<P>(TLWE<P> & res, const TLWE<P> &cs,     \
                              const TLWE<P> &c1, const TLWE<P> &c0, \
