@@ -151,7 +151,25 @@ void RunTest()
     vector<TLWE<P>> c(3 * kNumTests);
 
     if constexpr (std::is_same_v<P, lvl0param>) {
-        cout << "lvl0param Not run" << endl;
+        cout << "lvl0param" << endl;
+        Test<P>("NAND_NTT", TFHEpp::HomNAND_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                NandChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("OR_NTT", TFHEpp::HomOR_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                OrChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("ORYN_NTT", TFHEpp::HomORYN_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                OrYNChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("ORNY_NTT", TFHEpp::HomORNY_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                OrNYChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("AND_NTT", TFHEpp::HomAND_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                AndChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("ANDYN_NTT", TFHEpp::HomANDYN_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                AndYNChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("ANDNY_NTT", TFHEpp::HomANDNY_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                AndNYChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("XOR_NTT", TFHEpp::HomXOR_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                XorChegk, p, cres, c, kNumTests, *sk, ek);
+        Test<P>("XNOR_NTT", TFHEpp::HomXNOR_NTT<lvl01param, lvl1param::mu, lvl10param>,
+                XnorChegk, p, cres, c, kNumTests, *sk, ek);
     }
     else if constexpr (std::is_same_v<P, lvl1param>) {
         cout << "lvl1param" << endl;
@@ -180,5 +198,6 @@ void RunTest()
 int main()
 {
     RunTest<lvl1param>();
+    RunTest<lvl0param>();
     return 0;
 }
