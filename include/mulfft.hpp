@@ -57,6 +57,7 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
     {
+        std::cout << "@";
         std::array<uint64_t, lvl1param::n> temp;
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
@@ -67,6 +68,7 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
             res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
 #endif
     else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
+        std::cout << "&";
         cuHEpp::TwistNTT<typename lvl2param::T, lvl2param::nbit>(
             res, a, (*ntttablelvl2)[0], (*ntttwistlvl2)[0]);
     }
@@ -86,8 +88,9 @@ inline void TwistFFT(Polynomial<P> &res, const PolynomialInFD<P> &a)
         if constexpr (std::is_same_v<typename P::T, uint64_t>)
             fftplvl1.execute_direct_torus64(res.data(), a.data());
     }
-    else if constexpr (std::is_same_v<typename P::T, uint64_t>)
+    else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
         fftplvl2.execute_direct_torus64(res.data(), a.data());
+    }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistFFT!");
 }
@@ -113,6 +116,7 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
     {
+        std::cout << "@";
         std::array<uint64_t, lvl1param::n> temp;
         for (int i = 0; i < lvl1param::n; i++)
             temp[i] = (lvl1P * static_cast<uint64_t>(a[i])) >> 32;
@@ -123,9 +127,11 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
                                                   (*ntttwistlvl1)[1]);
 #endif
-    else if constexpr (std::is_same_v<typename P::T, uint64_t>)
+    else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
+        std::cout << "&";
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl2)[1],
                                                   (*ntttwistlvl2)[1]);
+    }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistINTT!");
 }
