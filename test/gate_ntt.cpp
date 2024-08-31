@@ -76,40 +76,34 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     for (uint8_t& i : p) i = binary(engine);
     c = bootsSymEncrypt<P>(p, sk);
 
-    //cout << "------ Starting Test " << type << " Gate ------" << endl;
     chrono::system_clock::time_point start, end;
     start = chrono::system_clock::now();
     for (int i = 0; i < kNumTests; i++) {
         if constexpr (std::is_invocable_v<Func, TLWE<P>&>) {
-            //cout << "One " << endl;
             func(cres[i]);
             p[i] = chegk();
         }
         else if constexpr (std::is_invocable_v<Func, TLWE<P>&,
-                                               const TLWE<P>&>) {
-            //cout << "Two " << endl;
+                const TLWE<P>&>) {
             func(cres[i], c[i]);
             p[i] = chegk(p[i]);
         }
         else if constexpr (std::is_invocable_v<Func, TLWE<P>&, const TLWE<P>&,
-                                               const TLWE<P>&,
-                                               const EvalKey&>) {
-           // cout << "Three " << endl;
+                const TLWE<P>&,
+                const EvalKey&>) {
             func(cres[i], c[i], c[i + kNumTests], ek);
             p[i] = chegk(p[i], p[i + kNumTests]);
         }
         else if constexpr (std::is_invocable_v<Func, TLWE<P>&, const TLWE<P>&,
-                                               const TLWE<P>&, const TLWE<P>&,
-                                               const EvalKey&>) {
-            //cout << "Four " << endl;
+                const TLWE<P>&, const TLWE<P>&,
+                const EvalKey&>) {
             func(cres[i], c[i], c[i + kNumTests], c[i + kNumTests * 2], ek);
             p[i] = chegk(p[i], p[i + kNumTests], p[i + kNumTests * 2]);
         }
         else if constexpr (std::is_invocable_v<Func, TLWE<P>&, const TLWE<P>&,
-                                               const TLWE<P>&, const TLWE<P>&,
-                                               const TLWE<P>&,
-                                               const EvalKey&>) {
-            //cout << "Five " << endl;
+                const TLWE<P>&, const TLWE<P>&,
+                const TLWE<P>&,
+                const EvalKey&>) {
             func(cres[i], c[i], c[i + kNumTests], c[i + kNumTests * 2],
                  c[i + kNumTests * 3], ek);
             p[i] = chegk(p[i], p[i + kNumTests], p[i + kNumTests * 2],
@@ -125,8 +119,8 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     for (int i = 0; i < kNumTests; i++) assert(p[i] == p2[i]);
     std::cout << "Passed" << std::endl;
     double elapsed =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count();
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                    .count();
     cout << elapsed / kNumTests << "ms" << endl;
 }
 
@@ -172,10 +166,11 @@ void RunTest()
                 XnorChegk, p, cres, c, kNumTests, *sk, ek);
         Test<P>("MUX_NTT", TFHEpp::HomMUX_NTT<P>, MuxChegk, p, cres, c, kNumTests, *sk,
                 ek);
+        Test<P>("NMUX_NTT", TFHEpp::HomNMUX_NTT<P>, NMuxChegk, p, cres, c, kNumTests,
+                *sk, ek);
     }
     else if constexpr (std::is_same_v<P, lvl1param>) {
         cout << "lvl1param" << endl;
-
         Test<P>("NAND_NTT", TFHEpp::HomNAND_NTT<lvl10param, lvl01param, lvl1param::mu>,
                 NandChegk, p, cres, c, kNumTests, *sk, ek);
         Test<P>("OR_NTT", TFHEpp::HomOR_NTT<lvl10param, lvl01param, lvl1param::mu>,
@@ -196,6 +191,8 @@ void RunTest()
                 XnorChegk, p, cres, c, kNumTests, *sk, ek);
         Test<P>("MUX_NTT", TFHEpp::HomMUX_NTT<P>, MuxChegk, p, cres, c, kNumTests, *sk,
                 ek);
+        Test<P>("NMUX_NTT", TFHEpp::HomNMUX_NTT<P>, NMuxChegk, p, cres, c, kNumTests,
+                *sk, ek);
     }
 }
 
