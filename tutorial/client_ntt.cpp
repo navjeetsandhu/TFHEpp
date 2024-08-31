@@ -11,7 +11,7 @@ int main()
     std::unique_ptr<TFHEpp::SecretKey> sk =
         std::make_unique<TFHEpp::SecretKey>();
     TFHEpp::EvalKey ek;
-    ek.emplacebkfft<TFHEpp::lvl01param>(*sk);
+    ek.emplacebkntt<TFHEpp::lvl01param>(*sk);
     ek.emplaceiksk<TFHEpp::lvl10param>(*sk);
 
     // export the secret key to file for later use
@@ -30,7 +30,7 @@ int main()
 
     // get client input
     uint16_t client_input;
-    std::cout << "Type client input (16bit unsigned interger)" << std::endl;
+    std::cout << "Type client input (16bit unsigned integer)" << std::endl;
     std::cin >> client_input;
 
     // encrypt the input
