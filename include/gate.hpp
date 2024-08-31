@@ -509,6 +509,15 @@ void HomNMUX(TLWE<P> &res, const TLWE<P> &cs, const TLWE<P> &c1,
     HomMUX<P>(res, cs, c1, c0, ek);
     for (int i = 0; i <= P::k * P::n; i++) res[i] = -res[i];
 }
+
+template <class P = lvl1param>
+void HomNMUX_NTT(TLWE<P> &res, const TLWE<P> &cs, const TLWE<P> &c1,
+           const TLWE<P> &c0, const EvalKey &ek)
+{
+    HomMUX_NTT<P>(res, cs, c1, c0, ek);
+    for (int i = 0; i <= P::k * P::n; i++) res[i] = -res[i];
+}
+
 template <class bkP>
 void HomMUXwoIKSandSE(TRLWE<typename bkP::targetP> &res,
                       const TLWE<typename bkP::domainP> &cs,
@@ -534,6 +543,32 @@ void HomMUXwoIKSandSE(TRLWE<typename bkP::targetP> &res,
     res[1][0] += bkP::targetP::mu;
 }
 
+template <class bkP>
+void HomMUXwoIKSandSE_NTT(TRLWE<typename bkP::targetP> &res,
+                     const TLWE<typename bkP::domainP> &cs,
+                     const TLWE<typename bkP::domainP> &c1,
+                     const TLWE<typename bkP::domainP> &c0, const EvalKey &ek)
+{
+    TLWE<typename bkP::domainP> temp1;
+    TLWE<typename bkP::domainP> temp0;
+    for (int i = 0; i <= bkP::domainP::n; i++) temp1[i] = cs[i] + c1[i];
+    for (int i = 0; i <= bkP::domainP::n; i++) temp0[i] = -cs[i] + c0[i];
+    temp1[lvl0param::n] -= bkP::domainP::mu;
+    temp0[lvl0param::n] -= bkP::domainP::mu;
+    TRLWE<typename bkP::targetP> and0;
+    BlindRotate<bkP>(res, temp1, ek.getbkntt<bkP>(),
+                     mupolygen<typename bkP::targetP, bkP::targetP::mu>());
+    BlindRotate<bkP>(and0, temp0, ek.getbkntt<bkP>(),
+                     mupolygen<typename bkP::targetP, bkP::targetP::mu>());
+
+    for (int i = 0; i < bkP::targetP::n; i++) {
+        res[0][i] += and0[0][i];
+        res[1][i] += and0[1][i];
+    };
+    res[1][0] += bkP::targetP::mu;
+}
+
+
 template <class brP, typename brP::targetP::T mu = brP::targetP::mu>
 void HomMUXwoSE(TRLWE<typename brP::targetP> &res,
                 const TLWE<typename brP::domainP> &cs,
@@ -551,6 +586,32 @@ void HomMUXwoSE(TRLWE<typename brP::targetP> &res,
     BlindRotate<brP>(res, and1, ek.getbkfft<brP>(),
                      mupolygen<typename brP::targetP, brP::targetP::mu>());
     BlindRotate<brP>(and0trlwe, and0, ek.getbkfft<brP>(),
+                     mupolygen<typename brP::targetP, brP::targetP::mu>());
+
+    for (int i = 0; i < brP::targetP::k * brP::targetP::n; i++) {
+        res[0][i] += and0trlwe[0][i];
+        res[1][i] += and0trlwe[1][i];
+    };
+    res[1][0] += brP::targetP::mu;
+}
+
+template <class brP, typename brP::targetP::T mu = brP::targetP::mu>
+    void HomMUXwoSE_NTT(TRLWE<typename brP::targetP> &res,
+              const TLWE<typename brP::domainP> &cs,
+              const TLWE<typename brP::domainP> &c1,
+              const TLWE<typename brP::domainP> &c0, const EvalKey &ek)
+{
+    TLWE<typename brP::domainP> and1, and0;
+    for (int i = 0; i <= brP::domainP::k * brP::domainP::n; i++)
+        and1[i] = cs[i] + c1[i];
+    for (int i = 0; i <= brP::domainP::k * brP::domainP::n; i++)
+        and0[i] = -cs[i] + c0[i];
+    and1[brP::domainP::k * brP::domainP::n] -= brP::domainP::mu;
+    and0[brP::domainP::k * brP::domainP::n] -= brP::domainP::mu;
+    TRLWE<typename brP::targetP> and0trlwe;
+    BlindRotate<brP>(res, and1, ek.getbkntt<brP>(),
+                     mupolygen<typename brP::targetP, brP::targetP::mu>());
+    BlindRotate<brP>(and0trlwe, and0, ek.getbkntt<brP>(),
                      mupolygen<typename brP::targetP, brP::targetP::mu>());
 
     for (int i = 0; i < brP::targetP::k * brP::targetP::n; i++) {
@@ -589,8 +650,41 @@ void HomMUXwoSE(TRLWE<typename brP::targetP> &res,
     res[1][0] += brP::targetP::mu;
 }
 
+template <class iksP, class brP, typename brP::targetP::T mu = brP::targetP::mu>
+    void HomMUXwoSE_NTT(TRLWE<typename brP::targetP> &res,
+              const TLWE<typename iksP::domainP> &cs,
+              const TLWE<typename iksP::domainP> &c1,
+              const TLWE<typename iksP::domainP> &c0, const EvalKey &ek)
+{
+    TLWE<typename iksP::domainP> temp1, temp0;
+    for (int i = 0; i <= iksP::domainP::k * iksP::domainP::n; i++)
+        temp1[i] = cs[i] + c1[i];
+    for (int i = 0; i <= iksP::domainP::k * iksP::domainP::n; i++)
+        temp0[i] = -cs[i] + c0[i];
+    temp1[iksP::domainP::k * iksP::domainP::n] -= iksP::domainP::mu;
+    temp0[iksP::domainP::k * iksP::domainP::n] -= iksP::domainP::mu;
+    TLWE<typename iksP::targetP> and1, and0;
+    IdentityKeySwitch<iksP>(and1, temp1, ek.getiksk<iksP>());
+    IdentityKeySwitch<iksP>(and0, temp0, ek.getiksk<iksP>());
+    TRLWE<typename brP::targetP> and0trlwe;
+    BlindRotate<brP>(res, and1, ek.getbkntt<brP>(),
+                     mupolygen<typename brP::targetP, brP::targetP::mu>());
+    BlindRotate<brP>(and0trlwe, and0, ek.getbkntt<brP>(),
+                     mupolygen<typename brP::targetP, brP::targetP::mu>());
+
+    for (int i = 0; i < brP::targetP::k * brP::targetP::n; i++) {
+        res[0][i] += and0trlwe[0][i];
+        res[1][i] += and0trlwe[1][i];
+    };
+    res[1][0] += brP::targetP::mu;
+}
+
+
 void ExtractSwitchAndHomMUX(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
                             const TRLWE<lvl1param> &c1r,
                             const TRLWE<lvl1param> &c0r, const EvalKey &ek);
 
+void ExtractSwitchAndHomMUX_NTT(TRLWE<lvl1param> &res, const TRLWE<lvl1param> &csr,
+                            const TRLWE<lvl1param> &c1r,
+                            const TRLWE<lvl1param> &c0r, const EvalKey &ek);
 }  // namespace TFHEpp

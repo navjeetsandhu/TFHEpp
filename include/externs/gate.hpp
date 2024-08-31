@@ -314,6 +314,13 @@ INST(lvl1param);
 INST(lvl0param);
 #undef INST
 
+#define INST(P)                                                    \
+    extern template void HomNMUX_NTT<P>(TLWE<P> & res, const TLWE<P> &cs,     \
+                             const TLWE<P> &c1, const TLWE<P> &c0, \
+                             const EvalKey &ek)
+    INST(lvl1param);
+    INST(lvl0param);
+#undef INST
 
 #define INST(bkP)                                                              \
     extern template void HomMUXwoIKSandSE<bkP>(TRLWE<typename bkP::targetP> & res,    \
@@ -325,6 +332,16 @@ TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST)
 #undef INST
 
 
+#define INST(bkP)                                                              \
+    extern template void HomMUXwoIKSandSE_NTT<bkP>(TRLWE<typename bkP::targetP> & res,    \
+                                        const TLWE<typename bkP::domainP> &cs, \
+                                        const TLWE<typename bkP::domainP> &c1, \
+                                        const TLWE<typename bkP::domainP> &c0, \
+                                        const EvalKey &ek)
+    TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST)
+#undef INST
+
+
 #define INST(iksP, bkP)                         \
     extern template void HomMUXwoSE<iksP, bkP>(        \
         TRLWE<typename bkP::targetP> & res,     \
@@ -333,4 +350,14 @@ TFHEPP_EXPLICIT_INSTANTIATION_BLIND_ROTATE(INST)
         const TLWE<typename iksP::domainP> &c0, const EvalKey &ek)
 TFHEPP_EXPLICIT_INSTANTIATION_GATE(INST)
 #undef INST
+
+#define INST(iksP, bkP)                         \
+    extern template void HomMUXwoSE_NTT<iksP, bkP>(        \
+        TRLWE<typename bkP::targetP> & res,     \
+        const TLWE<typename iksP::domainP> &cs, \
+        const TLWE<typename iksP::domainP> &c1, \
+        const TLWE<typename iksP::domainP> &c0, const EvalKey &ek)
+    TFHEPP_EXPLICIT_INSTANTIATION_GATE(INST)
+#undef INST
+
 }
