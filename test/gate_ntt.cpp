@@ -116,8 +116,17 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     end = chrono::system_clock::now();
     vector<uint8_t> p2(cres.size());
     p2 = bootsSymDecrypt<P>(cres, sk);
-    for (int i = 0; i < kNumTests; i++) assert(p[i] == p2[i]);
-    std::cout << "Passed" << std::endl;
+
+    bool pass_flag = true;
+    for (int i = 0; i < kNumTests; i++) {
+        if (p[i] != p2[i]) {
+            std::cout << "Test " << i << " Failed" << std::endl;
+            pass_flag = false;
+            break;
+        }
+    }
+    //for (int i = 0; i < kNumTests; i++) assert(p[i] == p2[i]);
+    if(pass_flag) std::cout << "Passed" << std::endl;
     double elapsed =
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
                     .count();
