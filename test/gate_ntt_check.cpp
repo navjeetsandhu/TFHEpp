@@ -5,6 +5,16 @@ using namespace TFHEpp;
 #include <iostream>
 using namespace std;
 
+bool assert_local(bool i) {
+    if (i) {
+        return true;
+    }  else {
+        cout << "Test Failed " << endl;
+        return false;
+    }
+}
+
+
 uint8_t ConstantZeroChegk() { return 0; }
 
 uint8_t ConstantOneChegk() { return 1; }
@@ -74,6 +84,7 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     cout << "Number of tests:\t" << kNumTests << endl;
 
     for (uint8_t& i : p) i = binary(engine);
+
     c = bootsSymEncrypt<P>(p, sk);
 
     chrono::system_clock::time_point start, end;
@@ -125,11 +136,12 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     end = chrono::system_clock::now();
     vector<uint8_t> p2(cres.size());
     p2 = bootsSymDecrypt<P>(cres, sk);
+    bool result = true;
     for (int i = 0; i < kNumTests; i++) {
         cout << "Test Output " << static_cast<int>(p[i]) << " " << static_cast<int>(p2[i]) <<endl;
-        assert(p[i] == p2[i]);
+        if(!assert_local(p[i] == p2[i])) result =false;
     }
-    std::cout << "Passed" << std::endl;
+    if(result) std::cout << "Overall test Passed" << std::endl;
     double elapsed =
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
                     .count();
