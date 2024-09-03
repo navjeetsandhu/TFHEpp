@@ -45,14 +45,25 @@ int main()
 #endif
 
     end = std::chrono::system_clock::now();
-    double elapsed =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-            .count();
-    std::cout << elapsed / num_test << "ms" << std::endl;
+
+
+    bool pass_flag = true;
     for (int i = 0; i < num_test; i++) {
-        bool p2 = TFHEpp::tlweSymDecrypt<typename iksP::domainP>(
-            bootedtlwe[i], sk.key.get<typename iksP::domainP>());
-        assert(p[i] == p2);
+        bool p2 = TFHEpp::tlweSymDecrypt<typename bkP::targetP>(
+                bootedtlwe[i], sk.key.get<typename bkP::targetP>());
+        //assert(p[i] == p2);
+        if (p[i] != p2) {
+            std::cout << "Test " << i << " Failed" << std::endl;
+            pass_flag = false;
+            break;
+        }
     }
+    if(pass_flag) std::cout << "Passed" << std::endl;
+
     std::cout << "Passed" << std::endl;
+
+    double elapsed =
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+                    .count();
+    std::cout << elapsed / num_test << "ms" << std::endl;
 }

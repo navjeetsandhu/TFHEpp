@@ -9,7 +9,7 @@ int main()
     std::random_device seed_gen;
     std::default_random_engine engine(seed_gen());
     std::uniform_int_distribution<uint32_t> binary(0, 1);
-
+    bool pass_flag = true;
     std::cout << "test p=1" << std::endl;
 
     std::cout << "lvl1" << std::endl;
@@ -32,10 +32,19 @@ int main()
         TFHEpp::trgswnttExternalProduct<TFHEpp::lvl1param>(c, c, trgswntt);
         std::array<bool, TFHEpp::lvl1param::n> p2 =
             TFHEpp::trlweSymDecrypt<TFHEpp::lvl1param>(c, key.lvl1);
-        for (int i = 0; i < TFHEpp::lvl1param::n; i++) assert(p[i] == p2[i]);
-    }
-    std::cout << "Passed" << std::endl;
 
+        for (int i = 0; i < TFHEpp::lvl1param::n; i++) {
+            if (p[i] != p2[i]) {
+                std::cout << "Test " << i << " Failed" << std::endl;
+                pass_flag = false;
+                break;
+            }
+            assert(p[i] == p2[i]);
+        }
+        if(!pass_flag) break;
+    }
+    if(pass_flag) std::cout << "Passed" << std::endl;
+    pass_flag = true;
     std::cout << "test p=-1" << std::endl;
 
     std::cout << "lvl1" << std::endl;
@@ -58,7 +67,16 @@ int main()
         TFHEpp::trgswnttExternalProduct<TFHEpp::lvl1param>(c, c, trgswntt);
         std::array<bool, TFHEpp::lvl1param::n> p2 =
             TFHEpp::trlweSymDecrypt<TFHEpp::lvl1param>(c, key.lvl1);
-        for (int i = 0; i < TFHEpp::lvl1param::n; i++) assert(p[i] == !p2[i]);
+        for (int i = 0; i < TFHEpp::lvl1param::n; i++) {
+
+            if (p[i] == p2[i]) {
+                std::cout << "Test " << i << " Failed" << std::endl;
+                pass_flag = false;
+                break;
+            }
+            assert(p[i] == !p2[i]);
+        }
+        if(!pass_flag) break;
     }
-    std::cout << "Passed" << std::endl;
+    if(pass_flag) std::cout << "Passed" << std::endl;
 }

@@ -123,8 +123,9 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
             pass_flag = false;
             break;
         }
+        assert(p[i] == p2[i]);
     }
-    //for (int i = 0; i < kNumTests; i++) assert(p[i] == p2[i]);
+
     if(pass_flag) std::cout << "Passed" << std::endl;
     double elapsed =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)

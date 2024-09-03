@@ -36,12 +36,20 @@ int main()
     }
 
     end = std::chrono::system_clock::now();
+
+    bool pass_flag = true;
     for (int i = 0; i < num_test; i++) {
         bool p2 = TFHEpp::tlweSymDecrypt<typename bkP::targetP>(
             bootedtlwe[i], sk.key.get<typename bkP::targetP>());
         assert(p[i] == p2);
+        if (p[i] != p2) {
+            std::cout << "Test " << i << " Failed" << std::endl;
+            pass_flag = false;
+            break;
+        }
     }
-    std::cout << "Passed" << std::endl;
+    if(pass_flag) std::cout << "Passed" << std::endl;
+
     double elapsed =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();
