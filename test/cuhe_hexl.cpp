@@ -58,7 +58,7 @@ int main()
         tablelvl1 = cuHEpp::TableGen<TFHEpp::lvl1param::nbit>();
 
 
-    std::cout << "Start LVL1 test." << std::endl;
+    std::cout << "Start cuHEpp LVL1 test." << std::endl;
     for (int test = 0; test < num_test; test++) {
         // std::array<typename TFHEpp::lvl1param::T,TFHEpp::lvl1param::n> a,res;
         TFHEpp::Polynomial<TFHEpp::lvl1param> a, res;
@@ -70,6 +70,21 @@ int main()
         cuHEpp::TwistNTT<typename TFHEpp::lvl1param::T,
                          TFHEpp::lvl1param::nbit>(res, resntt, (*tablelvl1)[0],
                                                   (*twistlvl1)[0]);
+        // for (int i = 0; i < TFHEpp::lvl1param::n; i++)
+        // std::cout<<res[i]<<":"<<a[i]<<std::endl;
+        for (int i = 0; i < TFHEpp::lvl1param::n; i++) _assert(a[i] == res[i]);
+    }
+    std::cout << "cuHEpp LVL1 Passed" << std::endl;
+
+
+    std::cout << "Start LVL1 test." << std::endl;
+    for (int test = 0; test < num_test; test++) {
+        // std::array<typename TFHEpp::lvl1param::T,TFHEpp::lvl1param::n> a,res;
+        TFHEpp::Polynomial<TFHEpp::lvl1param> a, res;
+        for (typename TFHEpp::lvl1param::T &i : a) i = Torus32dist(engine);
+        std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt;
+        TFHEpp::TwistINTT<TFHEpp::lvl1param>(resntt, a);
+        TFHEpp::TwistNTT<TFHEpp::lvl1param>(res, resntt);
         // for (int i = 0; i < TFHEpp::lvl1param::n; i++)
         // std::cout<<res[i]<<":"<<a[i]<<std::endl;
         for (int i = 0; i < TFHEpp::lvl1param::n; i++) _assert(a[i] == res[i]);
