@@ -10,7 +10,7 @@ constexpr bool false_v = false;
 
 constexpr uint64_t P = (((1ULL << 32) - 1) << 32) + 1;
 
-// this class defines operations over integaer torus.
+// this class defines operations over integer torus.
 class INTorus {
 public:
     uint64_t value;
