@@ -42,7 +42,7 @@ void NTTdebug(
 
 int main()
 {
-    constexpr uint32_t num_test = 1;
+    constexpr uint32_t num_print = 5;  // max lvl1param::n
     std::random_device seed_gen;
     std::default_random_engine engine(seed_gen());
     std::uniform_int_distribution<uint32_t> Bgdist(0, TFHEpp::lvl1param::Bg);
@@ -63,16 +63,16 @@ int main()
     std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt, resntt1, resntt2;
 
     std::cout << std::endl << "Start HEXL test" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 0);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 0);
+    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 0, num_print);
+    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 0, num_print);
 
     std::cout << std::endl << "Start HEXL test without bit shifting" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 1);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 1);
+    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 1, num_print);
+    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 1, num_print);
 
     std::cout << std::endl << "Start test without HEXL" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 2);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 2);
+    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 2, num_print);
+    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 2, num_print);
 
 
 

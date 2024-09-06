@@ -77,21 +77,21 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
 }
 
 template <class P>
-inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int test_no) {
+inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int test_case, int count = lvl1param::n) {
 #ifdef USE_HEXL
     int i;
     std::cout << "TwistNTT_lvl1param_test input:" << std::endl;
-    for (i = 0; i < lvl1param::n; i++) {
+    for (i = 0; i < count; i++) {
         std::cout << a[i].value << " ";
     }
     std::cout << std::endl;
-    if (test_no < 2) {
+    if (test_case < 2) {
         std::array<uint64_t, lvl1param::n> temp{};
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
         std::cout << "ComputeInverse output" << std::endl;
-        if (test_no < 1) {
-            for (i = 0; i < lvl1param::n; i++) {
+        if (test_case < 1) {
+            for (i = 0; i < count; i++) {
                 std::cout << temp[i] << " ";
             }
             std::cout << std::endl;
@@ -105,7 +105,7 @@ inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int
     }
 
     std::cout << "TwistNTT_lvl1param_test output:" << std::endl;
-    for (i = 0; i < lvl1param::n; i++) {
+    for (i = 0; i < count; i++) {
         std::cout << res[i] << " ";
     }
     std::cout << std::endl;
@@ -174,16 +174,16 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 }
 
 template <class P>
-inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> &a, int test_no)
+inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> &a, int test_case, int count = lvl1param::n)
 {
 #ifdef USE_HEXL
     int i;
     std::cout << "TwistINTT_lvl1param_test input:" << std::endl;
-    for (i = 0; i < lvl1param::n; i++) {
+    for (i = 0; i < count; i++) {
         std::cout << a[i] << " ";
     }
     std::cout << std::endl;
-    if(test_no < 2)
+    if(test_case < 2)
     {
         std::array<uint64_t, lvl1param::n> temp{};
         for (i = 0; i < lvl1param::n; i++)
@@ -192,7 +192,7 @@ inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> 
 
         std::cout << "ComputeForward input:" << std::endl;
 
-        for (i = 0; i < lvl1param::n; i++) {
+        for (i = 0; i < count; i++) {
             std::cout << temp[i] << " ";
         }
         std::cout << std::endl;
@@ -203,7 +203,7 @@ inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> 
                                        (*ntttwistlvl1)[1]);
     }
     std::cout << "TwistINTT_lvl1param_test output:" << std::endl;
-    for (i = 0; i < lvl1param::n; i++) {
+    for (i = 0; i < count; i++) {
         std::cout << res[i].value << " ";
     }
     std::cout << std::endl;
