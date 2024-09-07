@@ -1,5 +1,5 @@
 #pragma once
-
+//#define USE_HEXL
 #include <memory>
 
 #include "INTorus.hpp"
@@ -81,16 +81,32 @@ inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int
 #ifdef USE_HEXL
     int i;
     std::cout << "TwistNTT_lvl1param_test input:" << std::endl;
+    std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << a[i].value << " ";
     }
+    std::cout << std::endl;
+    std::cout << "TwistNTT_lvl1param_test input on HEX:" << std::endl;
+    std::cout << std::hex;
+    for (i = 0; i < count; i++) {
+        std::cout << a[i].value << " ";
+    }
+
     std::cout << std::endl;
     if (test_case < 2) {
         std::array<uint64_t, lvl1param::n> temp{};
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
-        std::cout << "ComputeInverse output" << std::endl;
+
         if (test_case < 1) {
+            std::cout << "ComputeInverse output" << std::endl;
+            std::cout << std::dec;
+            for (i = 0; i < count; i++) {
+                std::cout << temp[i] << " ";
+            }
+            std::cout << std::endl;
+            std::cout << "ComputeInverse output in HEX" << std::endl;
+            std::cout << std::hex;
             for (i = 0; i < count; i++) {
                 std::cout << temp[i] << " ";
             }
@@ -105,10 +121,17 @@ inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int
     }
 
     std::cout << "TwistNTT_lvl1param_test output:" << std::endl;
+    std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << res[i] << " ";
     }
     std::cout << std::endl;
+    std::cout << std::hex;
+    std::cout << "TwistNTT_lvl1param_test output in HEX:" << std::endl;
+    for (i = 0; i < count; i++) {
+        std::cout << res[i] << " ";
+    }
+    std::cout << std::endl << std::endl;
 #endif
 }
 
@@ -178,20 +201,38 @@ inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> 
 {
 #ifdef USE_HEXL
     int i;
-    std::cout << "TwistINTT_lvl1param_test input:" << std::endl;
+    std::cout << "TwistINTT_lvl1param_test " << test_case << " " << count << " Input: " << std::endl;
+    std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << a[i] << " ";
     }
     std::cout << std::endl;
+    std::cout << std::hex;
+    std::cout  << "Input in HEX: " << std::endl;
+    for (i = 0; i < count; i++) {
+        std::cout << std::hex << a[i] << " ";
+    }
+    std::cout << std::endl << std::endl;
+
     if(test_case < 2)
     {
+        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         std::array<uint64_t, lvl1param::n> temp{};
         for (i = 0; i < lvl1param::n; i++)
-            temp[i] = (lvl1P * static_cast<uint64_t>(a[i])) >> 32;
-        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
+            if(test_case < 1)
+                temp[i] = (lvl1P * static_cast<uint64_t>(a[i])) >> 32;
+            else
+                temp[i] = a[i];
 
         std::cout << "ComputeForward input:" << std::endl;
+         std::cout << std::dec;
+        for (i = 0; i < count; i++) {
+            std::cout << temp[i] << " ";
+        }
+        std::cout << std::endl;
 
+        std::cout << "ComputeForward input in HEX:" << std::endl;
+         std::cout << std::hex;
         for (i = 0; i < count; i++) {
             std::cout << temp[i] << " ";
         }
@@ -203,10 +244,18 @@ inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> 
                                        (*ntttwistlvl1)[1]);
     }
     std::cout << "TwistINTT_lvl1param_test output:" << std::endl;
+    std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << res[i].value << " ";
     }
-    std::cout << std::endl;
+    std::cout  << std::endl;
+    std::cout  << "Output in HEX: " << std::endl;
+    std::cout << std::hex;
+    for (i = 0; i < count; i++) {
+        std::cout << res[i].value << " ";
+    }
+    std::cout << std::endl << std::endl;
+
 #endif
 }
 
