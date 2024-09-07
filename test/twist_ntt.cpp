@@ -43,26 +43,29 @@ void NTTdebug(
 int main(int argc, char *argv[]) {
     uint32_t num_print = TFHEpp::lvl1param::n;
     int test_case = -1;
-    printf("Example: ./twist_ntt 1 0  ./twist_ntt 1024 1   ./twist_ntt 5 2 \n");
-    printf("Program name: %s: argc: %d\n", argv[0], argc);
+
+
+    printf("Example: ./twist_ntt 5 0  ./twist_ntt 5 1   ./twist_ntt 5 2\n");
+    printf("Program name: %s: argc: %d ", argv[0], argc);
 
     if(argc > 1) {
         for(int i = 1; i < argc; i++) {
-            printf("Argument %d: %s\n", i, argv[i]);
+            printf("Argument %d: %s ", i, argv[i]);
 
             if (i==1) {
                 num_print = std::stoi(argv[i]);
-                printf("num_print: %d\n", num_print);
+                printf("num_print: %d ", num_print);
             }
 
             if (i==2) {
                 test_case = std::stoi(argv[i]);
-                printf("test_case: %d\n", test_case );
+                printf("test_case: %d ", test_case );
             }
         }
     } else {
-        printf("No command line arguments were passed.\n");
+        printf("No command line arguments were passed. ");
     }
+    std::cout << std::endl << std::endl;
 
     std::random_device seed_gen;
     std::default_random_engine engine(seed_gen());
