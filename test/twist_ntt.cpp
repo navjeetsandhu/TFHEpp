@@ -40,9 +40,30 @@ void NTTdebug(
 }
 }  // namespace cuHEpp
 
-int main()
-{
-    constexpr uint32_t num_print = 5;  // max lvl1param::n
+int main(int argc, char *argv[]) {
+    uint32_t num_print = TFHEpp::lvl1param::n;
+    int test_case = -1;
+    printf("Example: ./twist_ntt 1 0  ./twist_ntt 1024 1   ./twist_ntt 5 2 \n");
+    printf("Program name: %s: argc: %d\n", argv[0], argc);
+
+    if(argc > 1) {
+        for(int i = 1; i < argc; i++) {
+            printf("Argument %d: %s\n", i, argv[i]);
+
+            if (i==1) {
+                num_print = std::stoi(argv[i]);
+                printf("num_print: %d\n", num_print);
+            }
+
+            if (i==2) {
+                test_case = std::stoi(argv[i]);
+                printf("test_case: %d\n", test_case );
+            }
+        }
+    } else {
+        printf("No command line arguments were passed.\n");
+    }
+
     std::random_device seed_gen;
     std::default_random_engine engine(seed_gen());
     std::uniform_int_distribution<uint32_t> Bgdist(0, TFHEpp::lvl1param::Bg);
@@ -56,30 +77,31 @@ int main()
     const std::array<std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n>, 2>>
     tablelvl1 = cuHEpp::TableGen<TFHEpp::lvl1param::nbit>();
 
-    std::cout << "Start LVL1 test." << std::endl;
 
     TFHEpp::Polynomial<TFHEpp::lvl1param> a, res0, res1, res2;
     for (typename TFHEpp::lvl1param::T &i : a) i = Torus32dist(engine);
     std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt, resntt1, resntt2;
 
-    std::cout << std::endl << "Start HEXL test" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 0, num_print);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 0, num_print);
-
-    std::cout << std::endl << "Start HEXL test without bit shifting" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 1, num_print);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 1, num_print);
-
-    std::cout << std::endl << "Start test without HEXL" << std::endl;
-    TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 2, num_print);
-    TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 2, num_print);
-
-
+    if( test_case == 0 ||  test_case < 0 ||  test_case > 3) {
+        std::cout << std::endl << "\nStart HEXL test" << std::endl;
+        TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 0, num_print);
+        TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 0, num_print);
+    }
+    if (test_case == 1 || test_case < 0 || test_case > 3) {
+        std::cout << std::endl << "\nStart HEXL test without bit shifting" << std::endl;
+        TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 1, num_print);
+        TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 1, num_print);
+    }
+    if (test_case == 2 || test_case < 0 || test_case > 3) {
+        std::cout << std::endl << "\nStart test without HEXL" << std::endl;
+        TFHEpp::TwistINTT_lvl1param_test<TFHEpp::lvl1param>(resntt, a, 2, num_print);
+        TFHEpp::TwistNTT_lvl1param_test<TFHEpp::lvl1param>(res0, resntt, 2, num_print);
+    }
 
 
     //for (int i = 0; i < TFHEpp::lvl1param::n; i++) _assert(a[i] == res[i]);
 
-    std::cout << "NTT Passed" << std::endl;
+    //std::cout << "NTT Passed" << std::endl;
 
 
 
