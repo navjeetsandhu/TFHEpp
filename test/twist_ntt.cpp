@@ -3,46 +3,61 @@
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
+#include <fstream>
 
-void _assert(bool flag) {
-    if(!flag) {
-        std::cout << " Failed" << std::endl;
+void storeInFile() {
+    std::random_device seed_gen;
+    std::default_random_engine engine(seed_gen());
+    std::uniform_int_distribution<uint32_t> Torus32dist(
+            0, std::numeric_limits<typename TFHEpp::lvl1param::T>::max());
+
+    std::ofstream file("torus32dist.txt");
+    TFHEpp::Polynomial<TFHEpp::lvl1param> a;
+    std::cout << std::endl << "Storing to file torus32dist.txt " << std::endl;
+    for (typename TFHEpp::lvl1param::T &i : a) {
+        i = Torus32dist(engine);
+        file << i << std::endl;
     }
-    assert(flag);
+    file.close();
 }
 
+int  readFromFile(std::vector<uint32_t>& data, bool flag = false) {
+    std::random_device seed_gen;
+    std::default_random_engine engine(seed_gen());
+    std::uniform_int_distribution<uint32_t> Torus32dist(
+            0, std::numeric_limits<typename TFHEpp::lvl1param::T>::max());
 
-namespace cuHEpp {
-template <uint32_t Nbit, uint8_t radixbit>
-void NTTdebug(
-    std::array<INTorus, 1 << Nbit> &res,
-    const std::array<INTorus, 1 << Nbit> &table,
-    std::array<std::array<INTorus, 1 << Nbit>,
-               Nbit / radixbit + ((Nbit % radixbit) > 0 ? 1 : 0)> &debug)
-{
-    constexpr uint8_t remainder = ((Nbit - 1) % radixbit) + 1;
-    constexpr uint32_t size = 1U << remainder;
-    constexpr uint32_t num_block = 1U << (Nbit - remainder);
-    for (uint32_t block = 0; block < num_block; block++)
-        NTTradixButterfly<remainder>(&res[size * block], size);
-    debug[0] = res;
-    int stage = 0;
-    for (uint8_t sizebit = remainder + radixbit; sizebit <= Nbit;
-         sizebit += radixbit) {
-        const uint32_t size = 1U << sizebit;
-        const uint32_t num_block = 1U << (Nbit - sizebit);
-        for (uint32_t block = 0; block < num_block; block++)
-            NTTradix<Nbit, radixbit>(&res[size * block], size, num_block,
-                                     table);
-        stage++;
-        debug[stage] = res;
+    if (flag) std::cout << std::endl << "Reading from file torus32dist.txt " << std::endl;
+
+    std::ifstream file("../../test/torus32dist.txt");
+    if (!file)
+    {
+        std::cerr << "Unable to open torus32dist.txt file" << std::endl;
+        return -1;
     }
+
+    uint32_t value;
+    while (file >> value)
+    {
+        // Push each value into the vector
+        data.push_back(value);
+    }
+
+    // print values
+    if (flag)
+        for (const auto &i : data)
+            std::cout << i << " ";
+
+
+    file.close();
+    return 0;
 }
-}  // namespace cuHEpp
+
 
 int main(int argc, char *argv[]) {
     uint32_t num_print = TFHEpp::lvl1param::n;
     int test_case = -1;
+    std::vector<uint32_t> data;
 
 
     printf("Example: ./twist_ntt 5 0  ./twist_ntt 5 1   ./twist_ntt 5 2\n");
@@ -60,29 +75,30 @@ int main(int argc, char *argv[]) {
             if (i==2) {
                 test_case = std::stoi(argv[i]);
                 printf("test_case: %d ", test_case );
+
+                if(test_case == 3) {
+                    storeInFile();
+                    return 1;
+                }
+                if(test_case == 4) {
+                    readFromFile(data, true);
+                    return 1;
+                }
+
             }
         }
     } else {
         printf("No command line arguments were passed. ");
     }
     std::cout << std::endl << std::endl;
-
-    std::random_device seed_gen;
-    std::default_random_engine engine(seed_gen());
-    std::uniform_int_distribution<uint32_t> Bgdist(0, TFHEpp::lvl1param::Bg);
-    std::uniform_int_distribution<uint32_t> Torus32dist(
-        0, std::numeric_limits<typename TFHEpp::lvl1param::T>::max());
-
-    const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n>, 2>>
-    twistlvl1 = cuHEpp::TwistGen<TFHEpp::lvl1param::nbit>();
-    const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n>, 2>>
-    tablelvl1 = cuHEpp::TableGen<TFHEpp::lvl1param::nbit>();
-
+    readFromFile(data);
 
     TFHEpp::Polynomial<TFHEpp::lvl1param> a, res0, res1, res2;
-    for (typename TFHEpp::lvl1param::T &i : a) i = Torus32dist(engine);
+    int j =0;
+    for (typename TFHEpp::lvl1param::T &i : a) {
+        i = data[j];
+        j++;
+    }
     std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt, resntt1, resntt2;
 
     if( test_case == 0 ||  test_case < 0 ||  test_case > 3) {
