@@ -47,8 +47,8 @@ inline const std::unique_ptr<
     std::array<std::array<std::array<raintt::SWord, lvl1param::n>, 2>, 2>>
     raintttable = raintt::TableGen<lvl1param::nbit>();
 #ifdef USE_HEXL
-// Biggest prime number less than 2^33 and satisfies 1 mod 2N.
-constexpr uint64_t lvl1P = 8589905921;
+// Biggest prime number less than 2^62 and satisfies 1 mod 2N.
+constexpr uint64_t lvl1P = 4611686018427365377;
 #endif
 
 template <class P>
