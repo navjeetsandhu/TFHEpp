@@ -45,7 +45,7 @@ struct lvl1param {
     static constexpr std::uint32_t nbit =
         10;  // dimension must be a power of 2 for ease of polynomial
              // multiplication.
-    static constexpr std::uint32_t n = 1 << nbit;  // dimension
+    static constexpr std::uint32_t n = 1 << nbit;  // dimension: 1024
     static constexpr std::uint32_t k = 1;
     static constexpr std::uint32_t l = 3;
     static constexpr std::uint32_t Bgbit = 6;
