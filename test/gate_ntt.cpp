@@ -1,8 +1,8 @@
 #include <tfhe++.hpp>
-using namespace TFHEpp;
-
+#include "my_assert.h"
 #include <chrono>
 #include <iostream>
+using namespace TFHEpp;
 using namespace std;
 
 uint8_t ConstantZeroChegk() { return 0; }
@@ -119,15 +119,10 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
 
     bool pass_flag = true;
     for (int i = 0; i < kNumTests; i++) {
-        if (p[i] != p2[i]) {
-            std::cout << "Test " << i << " Failed" << std::endl;
-            pass_flag = false;
-            break;
-        }
-        assert(p[i] == p2[i]);
+        _assert(p[i] == p2[i]);
     }
 
-    if(pass_flag) std::cout << "Passed" << std::endl;
+    std::cout << "Passed" << std::endl;
     double elapsed =
             std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
                     .count();

@@ -1,8 +1,8 @@
 #include <tfhe++.hpp>
-using namespace TFHEpp;
-
+#include "my_assert.h"
 #include <chrono>
 #include <iostream>
+using namespace TFHEpp;
 using namespace std;
 
 uint8_t ConstantZeroChegk() { return 0; }
@@ -123,7 +123,7 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
             pass_flag = false;
             break;
         }
-        assert(p[i] == p2[i]);
+        _assert(p[i] == p2[i]);
     }
 
     if(pass_flag) std::cout << "Passed" << std::endl;

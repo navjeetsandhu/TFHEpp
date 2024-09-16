@@ -2,7 +2,7 @@
 #include <gperftools/profiler.h>
 #endif
 
-#include <cassert>
+#include "my_assert.h"
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -57,7 +57,7 @@ int main()
             pass_flag = false;
             break;
         }
-        assert(pres[i] == !(pa[i] & pb[i]));
+        _assert(pres[i] == !(pa[i] & pb[i]));
     }
    if (pass_flag) cout << "Passed" << endl;
     double elapsed =
