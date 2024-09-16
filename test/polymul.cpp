@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <cassert>
+#include "my_assert.h"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -28,7 +28,7 @@ int main()
         Polynomial<lvl1param> res;
         TFHEpp::TwistFFT<lvl1param>(res, resfft);
         for (int i = 0; i < lvl1param::n; i++)
-            assert(abs(static_cast<int32_t>(a[i] - res[i])) <= 1);
+            _assert(abs(static_cast<int32_t>(a[i] - res[i])) <= 1);
     }
     cout << "FFT Passed" << endl;
 
@@ -52,7 +52,7 @@ int main()
                     static_cast<int32_t>(a[j]) * b[lvl1param::n + i - j];
         }
         for (int i = 0; i < lvl1param::n; i++)
-            assert(abs(static_cast<int32_t>(naieve[i] - polymul[i])) <= 1);
+            _assert(abs(static_cast<int32_t>(naieve[i] - polymul[i])) <= 1);
     }
     cout << "PolyMul Passed" << endl;
 
@@ -68,7 +68,7 @@ int main()
         Polynomial<lvl2param> res;
         TFHEpp::TwistFFT<lvl2param>(res, resfft);
         for (int i = 0; i < lvl2param::n; i++)
-            assert(abs(static_cast<int64_t>(a[i] - res[i])) <= (1 << 14));
+            _assert(abs(static_cast<int64_t>(a[i] - res[i])) <= (1 << 14));
     }
     cout << "FFT Passed" << endl;
 

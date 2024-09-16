@@ -50,16 +50,10 @@ int main()
     ProfilerStop();
 #endif
     pres = bootsSymDecrypt(cres, *sk);
-    bool pass_flag = true;
     for (int i = 0; i < num_test; i++) {
-        if (pres[i] == (pa[i] & pb[i])) {
-            std::cout << "Test " << i << " Failed" << std::endl;
-            pass_flag = false;
-            break;
-        }
         _assert(pres[i] == !(pa[i] & pb[i]));
     }
-   if (pass_flag) cout << "Passed" << endl;
+   cout << "Passed" << endl;
     double elapsed =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();

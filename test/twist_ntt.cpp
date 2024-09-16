@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     std::vector<uint32_t> data;
 
 
-    printf("Example: ./twist_ntt 5 0  ./twist_ntt 5 1   ./twist_ntt 5 2\n");
+    printf("Example: ./twist_ntt 5 0  ./twist_ntt 5 1  \n");
     printf("Program name: %s: argc: %d ", argv[0], argc);
 
     if(argc > 1) {
