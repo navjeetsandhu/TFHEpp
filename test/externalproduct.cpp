@@ -1,4 +1,4 @@
-#include <cassert>
+#include "my_assert.h"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -12,7 +12,6 @@ int main()
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint32_t> binary(0, 1);
-    bool pass_flag = true;
     cout << "test p=1" << endl;
 
     cout << "lvl1" << endl;
@@ -34,17 +33,11 @@ int main()
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
         for (int i = 0; i < lvl1param::n; i++) {
-            assert(p[i] == p2[i]);
-            if (p[i] != p2[i]) {
-                std::cout << "Test " << i << " Failed" << std::endl;
-                pass_flag = false;
-                break;
-            }
+            _assert(p[i] == p2[i]);
         }
-        if(!pass_flag) break;
+
     }
-    if (pass_flag) cout << "Passed" << endl;
-    pass_flag = true;
+    cout << "Passed" << endl;
     cout << "lvl2" << endl;
     for (int test = 0; test < num_test; test++) {
         lweKey key;
@@ -64,16 +57,10 @@ int main()
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
         for (int i = 0; i < lvl2param::n; i++) {
-            if (p[i] != p2[i]) {
-                std::cout << "Test " << i << " Failed" << std::endl;
-                pass_flag = false;
-                break;
-            }
-            assert(p[i] == p2[i]);
+            _assert(p[i] == p2[i]);
         }
-        if(!pass_flag) break;
     }
-    if(pass_flag) cout << "Passed" << endl;
+    cout << "Passed" << endl;
 
     cout << "test p=-1" << endl;
 
@@ -96,17 +83,11 @@ int main()
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
         for (int i = 0; i < lvl1param::n; i++) {
-            if (p[i] == p2[i]) {
-                std::cout << "Test " << i << " Failed" << std::endl;
-                pass_flag = false;
-                break;
-            }
-            assert(p[i] == !p2[i]);
+            _assert(p[i] == !p2[i]);
         }
-        if(!pass_flag) break;
+
     }
-    if(pass_flag) cout << "Passed" << endl;
-    pass_flag = true;
+    cout << "Passed" << endl;
     cout << "lvl2" << endl;
     for (int test = 0; test < num_test; test++) {
         lweKey key;
@@ -126,14 +107,8 @@ int main()
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
         for (int i = 0; i < lvl2param::n; i++) {
-            if (p[i] == p2[i]) {
-                std::cout << "Test " << i << " Failed" << std::endl;
-                pass_flag = false;
-                break;
-            }
-            assert(p[i] == !p2[i]);
+            _assert(p[i] == !p2[i]);
         }
-        if(!pass_flag) break;
     }
-    if(pass_flag)  cout << "Passed" << endl;
+    cout << "Passed" << endl;
 }
