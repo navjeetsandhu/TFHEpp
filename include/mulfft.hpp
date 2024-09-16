@@ -57,7 +57,7 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
     {
-        //std::cout << "@";
+//        std::cout << "@";
         std::array<uint64_t, lvl1param::n> temp;
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
@@ -68,51 +68,12 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
             res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
 #endif
     else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
-        //std::cout << "&";
+  //      std::cout << "&";
         cuHEpp::TwistNTT<typename lvl2param::T, lvl2param::nbit>(
             res, a, (*ntttablelvl2)[0], (*ntttwistlvl2)[0]);
     }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistNTT!");
-}
-
-template <class P>
-inline void TwistNTT_debug(Polynomial<P> &res, PolynomialNTT<P> &a, int test_case, int count = lvl1param::n) {
-#ifdef USE_HEXL
-    int i;
-    std::cout << "TwistNTT_debug:" << std::endl;
-    std::cout << std::dec;
-    for (i = 0; i < count; i++) {
-        std::cout << a[i].value << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "TwistNTT_lvl1param_test input on HEX:" << std::endl;
-    std::cout << std::hex;
-    for (i = 0; i < count; i++) {
-        std::cout << a[i].value << " ";
-    }
-
-    std::cout << std::endl;
-    if (test_case < 1) {
-        TwistNTT<P>(res, a);
-    } else {
-        cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
-                res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
-    }
-
-    std::cout << "TwistNTT_lvl1param_test output:" << std::endl;
-    std::cout << std::dec;
-    for (i = 0; i < count; i++) {
-        std::cout << res[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << std::hex;
-    std::cout << "TwistNTT_lvl1param_test output in HEX:" << std::endl;
-    for (i = 0; i < count; i++) {
-        std::cout << res[i] << " ";
-    }
-    std::cout << std::endl << std::endl;
-#endif
 }
 
 
@@ -156,7 +117,7 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
     {
-        //std::cout << "@";
+        //std::cout << "*";
         std::array<uint64_t, lvl1param::n> temp{};
         for (int i = 0; i < lvl1param::n; i++) temp[i] = a[i];
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
@@ -167,55 +128,13 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
                                                   (*ntttwistlvl1)[1]);
 #endif
     else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
-        //std::cout << "&";
+    //    std::cout << "&";
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl2)[1],
                                                   (*ntttwistlvl2)[1]);
     }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistINTT!");
 }
-
-template <class P>
-inline void TwistINTT_debug(PolynomialNTT<P> &res, const Polynomial<P> &a, int test_case, int count = lvl1param::n)
-{
-#ifdef USE_HEXL
-    int i;
-    std::cout << "TwistINTT_debug " << test_case << " " << count << " Input: " << std::endl;
-    std::cout << std::dec;
-    for (i = 0; i < count; i++) {
-        std::cout << a[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << std::hex;
-    std::cout  << "Input in HEX: " << std::endl;
-    for (i = 0; i < count; i++) {
-        std::cout << std::hex << a[i] << " ";
-    }
-    std::cout << std::endl << std::endl;
-
-    if(test_case < 1)
-    {
-        TwistINTT<P>(res, a);
-    } else {
-        cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
-                                       (*ntttwistlvl1)[1]);
-    }
-    std::cout << "TwistINTT_debug output:" << std::endl;
-    std::cout << std::dec;
-    for (i = 0; i < count; i++) {
-        std::cout << res[i].value << " ";
-    }
-    std::cout  << std::endl;
-    std::cout  << "Output in HEX: " << std::endl;
-    std::cout << std::hex;
-    for (i = 0; i < count; i++) {
-        std::cout << res[i].value << " ";
-    }
-    std::cout << std::endl << std::endl;
-
-#endif
-}
-
 
 template <class P>
 inline void TwistIFFT(PolynomialInFD<P> &res, const Polynomial<P> &a)
@@ -327,6 +246,18 @@ inline void FMAInFD(std::array<double, N> &res, const std::array<double, N> &a,
 // }
 #endif
 }
+
+template <class P>
+inline void PolyMulNtt(Polynomial<P> &res, const Polynomial<P> &a,
+                        const Polynomial<P> &b)
+{
+    PolynomialNTT<P> ntta, nttb;
+    TwistINTT<P>(ntta, a);
+    TwistINTT<P>(nttb, b);
+    for (int i = 0; i < P::n; i++) ntta[i] *= nttb[i];
+    TwistNTT<P>(res, ntta);
+}
+
 
 template <class P>
 inline void PolyMul(Polynomial<P> &res, const Polynomial<P> &a,

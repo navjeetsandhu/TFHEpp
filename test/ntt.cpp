@@ -56,15 +56,14 @@ int  readFromFile(std::vector<uint32_t>& data, bool flag = false) {
 
 int main(int argc, char *argv[]) {
     uint32_t num_print = TFHEpp::lvl1param::n;
-    int test_case = -1;
+    uint32_t i, test_case = 0;
     std::vector<uint32_t> data;
 
-
-    printf("Example: ./twist_ntt 5 0  ./twist_ntt 5 1  \n");
+    printf("Example: ./twist_ntt 5 0  \n");
     printf("Program name: %s: argc: %d ", argv[0], argc);
 
     if(argc > 1) {
-        for(int i = 1; i < argc; i++) {
+        for(i = 1; i < argc; i++) {
             printf("Argument %d: %s ", i, argv[i]);
 
             if (i==1) {
@@ -75,8 +74,6 @@ int main(int argc, char *argv[]) {
             if (i==2) {
                 test_case = std::stoi(argv[i]);
                 printf("test_case: %d ", test_case );
-
-
             }
         }
     } else {
@@ -85,32 +82,39 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl << std::endl;
     readFromFile(data);
 
-    TFHEpp::Polynomial<TFHEpp::lvl1param> a, res;
+    TFHEpp::Polynomial<TFHEpp::lvl1param> input, res;
     int j =0;
-    for (typename TFHEpp::lvl1param::T &i : a) {
-        i = data[j];
+    for (typename TFHEpp::lvl1param::T &element : input) {
+        element = data[j];
         j++;
     }
-    std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt, resntt1, resntt2;
+    std::array<cuHEpp::INTorus, TFHEpp::lvl1param::n> resntt;
 
     if( test_case == 0) {
         std::cout << std::endl << "\nStart HEXL test" << std::endl;
-        TFHEpp::TwistINTT_debug<TFHEpp::lvl1param>(resntt, a, 0, num_print);
-        TFHEpp::TwistNTT_debug<TFHEpp::lvl1param>(res, resntt, 0, num_print);
+        TFHEpp::TwistINTT<TFHEpp::lvl1param>(resntt, input);
+        TFHEpp::TwistNTT<TFHEpp::lvl1param>(res, resntt);
     }
-    if (test_case == 1) {
-        std::cout << std::endl << "\nStart test without HEXL" << std::endl;
-        TFHEpp::TwistINTT_debug<TFHEpp::lvl1param>(resntt, a, 1, num_print);
-        TFHEpp::TwistNTT_debug<TFHEpp::lvl1param>(res, resntt, 1, num_print);
-    }
-    if(test_case == 2) {
+    if(test_case == 1) {
         storeInFile();
     }
-    if(test_case == 3) {
+    if(test_case == 2) {
         readFromFile(data, true);
     }
 
-    for (int i = 0; i < TFHEpp::lvl1param::n; i++) _assert(a[i] == res[i]);
-    std::cout << "NTT Passed" << std::endl;
+    std::cout << "NTT input" << std::endl;
+    std::cout << std::dec;
+    for (i = 0; i < num_print; i++) {
+        std::cout << input[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "TwistNTT_lvl1param_test input on HEX:" << std::endl;
+    std::cout << std::hex;
+    for (i = 0; i < num_print; i++) {
+        std::cout << input[i] << " ";
+    }
+
+    for (i = 0; i < TFHEpp::lvl1param::n; i++) _assert(input[i] == res[i]);
+    std::cout << std::endl << "NTT Passed" << std::endl;
     return 0;
 }
