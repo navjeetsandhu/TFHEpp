@@ -5,6 +5,7 @@
 #include <tfhe++.hpp>
 #include <fstream>
 
+
 void storeInFile() {
     std::random_device seed_gen;
     std::default_random_engine engine(seed_gen());
@@ -53,6 +54,26 @@ int  readFromFile(std::vector<uint32_t>& data, bool flag = false) {
     return 0;
 }
 
+void more_ntt_tests() {
+    constexpr uint32_t num_test = 100;
+    TFHEpp::random_device seed_gen;
+    TFHEpp::default_random_engine engine(seed_gen());
+    TFHEpp::uniform_int_distribution <uint32_t> Torus32dist(0, UINT32_MAX);
+
+
+    std::cout << std::endl << "Start randoms test." << std::endl;
+    for (int test = 0; test < num_test; test++) {
+        TFHEpp::Polynomial <TFHEpp::lvl1param> a;
+        for (typename TFHEpp::lvl1param::T &i: a) i = Torus32dist(engine);
+        TFHEpp::PolynomialNTT <TFHEpp::lvl1param> resntt;
+        TFHEpp::TwistINTT<TFHEpp::lvl1param>(resntt, a);
+        TFHEpp::Polynomial <TFHEpp::lvl1param> res;
+        TFHEpp::TwistNTT<TFHEpp::lvl1param>(res, resntt);
+        for (int i = 0; i < TFHEpp::lvl1param::n; i++)
+            _assert(a[i] == res[i]);
+    }
+    std::cout << "NTT Passed" << std::endl;
+}
 
 int main(int argc, char *argv[]) {
     uint32_t num_print = TFHEpp::lvl1param::n;
@@ -115,6 +136,10 @@ int main(int argc, char *argv[]) {
     }
 
     for (i = 0; i < TFHEpp::lvl1param::n; i++) _assert(input[i] == res[i]);
-    std::cout << std::endl << "NTT Passed" << std::endl;
+    std::cout << std::endl << "First NTT Passed" << std::endl;
+
+
+    more_ntt_tests();
+
     return 0;
 }

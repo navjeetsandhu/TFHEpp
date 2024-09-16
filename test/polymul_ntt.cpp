@@ -15,8 +15,6 @@ int main()
     uniform_int_distribution<uint32_t> Bgdist(0, lvl1param::Bg);
     uniform_int_distribution<uint32_t> Torus32dist(0, UINT32_MAX);
 
-
-
     cout << "Start LVL1 test." << endl;
     for (int test = 0; test < num_test; test++) {
         Polynomial<lvl1param> a;
