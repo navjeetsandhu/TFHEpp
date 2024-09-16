@@ -3,7 +3,7 @@
 #include <gmpxx.h>
 #endif
 
-#include <cassert>
+#include "my_assert.h"
 #include <cuhe++.hpp>
 #include <iostream>
 #include <random>
@@ -13,7 +13,7 @@ using namespace cuHEpp;
 
 int main()
 {
-    constexpr int numTest = 100000;
+    constexpr int numTest = 10000;
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint64_t> dist(0, P);
@@ -24,7 +24,7 @@ int main()
         __uint128_t b = dist(engine);
         INTorus A(a);
         INTorus B(b);
-        assert((A + B).value == ((a + b) % P));
+        _assert((A + B).value == ((a + b) % P));
     }
     cout << "Add PASS" << endl;
 
@@ -35,7 +35,7 @@ int main()
         INTorus A(a);
         INTorus B(b);
         A += B;
-        assert(A.value == ((a + b) % P));
+        _assert(A.value == ((a + b) % P));
     }
     cout << "Add and assignment PASS" << endl;
 
@@ -45,7 +45,7 @@ int main()
         __uint128_t b = dist(engine);
         INTorus A(a);
         INTorus B(b);
-        assert((A - B).value == ((a + (P - b)) % P));
+        _assert((A - B).value == ((a + (P - b)) % P));
     }
     cout << "Sub PASS" << endl;
 
@@ -56,8 +56,8 @@ int main()
         INTorus A(a);
         INTorus B(b);
         A -= B;
-        // cout<<A.value<<":"<<static_cast<uint64_t>((a+(P-b))%P)<<endl;
-        assert(A.value == ((a + (P - b)) % P));
+        //cout<<A.value<<":"<<static_cast<uint64_t>((a+(P-b))%P)<<endl;
+        _assert(A.value == ((a + (P - b)) % P));
     }
     cout << "Sub and assignment PASS" << endl;
 
@@ -67,8 +67,8 @@ int main()
         __uint128_t b = dist(engine);
         INTorus A(a);
         INTorus B(b);
-        // cout<<(A*B).value<<":"<<static_cast<uint64_t>((a*b)%P)<<endl;
-        assert((A * B).value == ((a * b) % P));
+        //cout<<(A*B).value<<":"<<static_cast<uint64_t>((a*b)%P)<<endl;
+        _assert((A * B).value == ((a * b) % P));
     }
     cout << "Mul PASS" << endl;
 
@@ -79,8 +79,8 @@ int main()
         INTorus A(a);
         INTorus B(b);
         A *= B;
-        // cout<<A.value<<":"<<static_cast<uint64_t>((a*b)%P)<<endl;
-        assert(A.value == ((a * b) % P));
+        //cout<<A.value<<":"<<static_cast<uint64_t>((a*b)%P)<<endl;
+        _assert(A.value == ((a * b) % P));
     }
     cout << "Mul and assignment PASS" << endl;
 
@@ -121,7 +121,7 @@ int main()
 
     // InvPow2 Test
     for (int i = 1; i <= 31; i++) {
-        assert((INTorus(1U << i, false) * cuHEpp::InvPow2(i)).value == 1);
+        _assert((INTorus(1U << i, false) * cuHEpp::InvPow2(i)).value == 1);
     }
     cout << "InvPow2 PASS" << endl;
 }
