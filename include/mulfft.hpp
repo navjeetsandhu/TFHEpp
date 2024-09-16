@@ -61,7 +61,7 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
         std::array<uint64_t, lvl1param::n> temp;
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
-        for (int i = 0; i < lvl1param::n; i++) res[i] = (temp[i] << 32) / lvl1P;
+        for (int i = 0; i < lvl1param::n; i++) res[i] = temp[i];
     }
 #else
         cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
@@ -77,10 +77,10 @@ inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
 }
 
 template <class P>
-inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int test_case, int count = lvl1param::n) {
+inline void TwistNTT_debug(Polynomial<P> &res, PolynomialNTT<P> &a, int test_case, int count = lvl1param::n) {
 #ifdef USE_HEXL
     int i;
-    std::cout << "TwistNTT_lvl1param_test input:" << std::endl;
+    std::cout << "TwistNTT_debug:" << std::endl;
     std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << a[i].value << " ";
@@ -93,28 +93,8 @@ inline void TwistNTT_lvl1param_test(Polynomial<P> &res, PolynomialNTT<P> &a, int
     }
 
     std::cout << std::endl;
-    if (test_case < 2) {
-        std::array<uint64_t, lvl1param::n> temp{};
-        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
-        nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
-
-        if (test_case < 1) {
-            std::cout << "ComputeInverse output" << std::endl;
-            std::cout << std::dec;
-            for (i = 0; i < count; i++) {
-                std::cout << temp[i] << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "ComputeInverse output in HEX" << std::endl;
-            std::cout << std::hex;
-            for (i = 0; i < count; i++) {
-                std::cout << temp[i] << " ";
-            }
-            std::cout << std::endl;
-            for (i = 0; i < lvl1param::n; i++) res[i] = (temp[i] << 32) / lvl1P;
-        } else {
-            for (i = 0; i < lvl1param::n; i++) res[i] = temp[i];
-        }
+    if (test_case < 1) {
+        TwistNTT<P>(res, a);
     } else {
         cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
                 res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
@@ -177,9 +157,8 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 #ifdef USE_HEXL
     {
         //std::cout << "@";
-        std::array<uint64_t, lvl1param::n> temp;
-        for (int i = 0; i < lvl1param::n; i++)
-            temp[i] = (lvl1P * static_cast<uint64_t>(a[i])) >> 32;
+        std::array<uint64_t, lvl1param::n> temp{};
+        for (int i = 0; i < lvl1param::n; i++) temp[i] = a[i];
         static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
         nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
     }
@@ -197,11 +176,11 @@ inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 }
 
 template <class P>
-inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> &a, int test_case, int count = lvl1param::n)
+inline void TwistINTT_debug(PolynomialNTT<P> &res, const Polynomial<P> &a, int test_case, int count = lvl1param::n)
 {
 #ifdef USE_HEXL
     int i;
-    std::cout << "TwistINTT_lvl1param_test " << test_case << " " << count << " Input: " << std::endl;
+    std::cout << "TwistINTT_debug " << test_case << " " << count << " Input: " << std::endl;
     std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << a[i] << " ";
@@ -214,36 +193,14 @@ inline void TwistINTT_lvl1param_test(PolynomialNTT<P> &res, const Polynomial<P> 
     }
     std::cout << std::endl << std::endl;
 
-    if(test_case < 2)
+    if(test_case < 1)
     {
-        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
-        std::array<uint64_t, lvl1param::n> temp{};
-        for (i = 0; i < lvl1param::n; i++)
-            if(test_case < 1)
-                temp[i] = (lvl1P * static_cast<uint64_t>(a[i])) >> 32;
-            else
-                temp[i] = a[i];
-
-        std::cout << "ComputeForward input:" << std::endl;
-         std::cout << std::dec;
-        for (i = 0; i < count; i++) {
-            std::cout << temp[i] << " ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "ComputeForward input in HEX:" << std::endl;
-         std::cout << std::hex;
-        for (i = 0; i < count; i++) {
-            std::cout << temp[i] << " ";
-        }
-        std::cout << std::endl;
-
-        nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
+        TwistINTT<P>(res, a);
     } else {
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
                                        (*ntttwistlvl1)[1]);
     }
-    std::cout << "TwistINTT_lvl1param_test output:" << std::endl;
+    std::cout << "TwistINTT_debug output:" << std::endl;
     std::cout << std::dec;
     for (i = 0; i < count; i++) {
         std::cout << res[i].value << " ";

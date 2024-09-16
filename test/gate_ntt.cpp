@@ -117,7 +117,6 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     vector<uint8_t> p2(cres.size());
     p2 = bootsSymDecrypt<P>(cres, sk);
 
-    bool pass_flag = true;
     for (int i = 0; i < kNumTests; i++) {
         _assert(p[i] == p2[i]);
     }
