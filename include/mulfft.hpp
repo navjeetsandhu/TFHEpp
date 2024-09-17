@@ -27,42 +27,48 @@
 #include "utils.hpp"
 
 namespace TFHEpp {
+    inline const std::unique_ptr<
+        const std::array<std::array<cuHEpp::INTorus, lvl1param::n>, 2>>
+            ntttwistlvl1 = cuHEpp::TwistGen<lvl1param::nbit>();
+    inline const std::unique_ptr<
+        const std::array<std::array<cuHEpp::INTorus, lvl1param::n>, 2>>
+            ntttablelvl1 = cuHEpp::TableGen<lvl1param::nbit>();
+    inline const std::unique_ptr<
+            const std::array<std::array<cuHEpp::INTorus, lvl2param::n>, 2>>
+            ntttwistlvl2 = cuHEpp::TwistGen<lvl2param::nbit>();
+    inline const std::unique_ptr<
+            const std::array<std::array<cuHEpp::INTorus, lvl2param::n>, 2>>
+            ntttablelvl2 = cuHEpp::TableGen<lvl2param::nbit>();
+    inline const std::unique_ptr<
+            std::array<std::array<raintt::SWord, lvl1param::n>, 2>>
+            raintttwist = raintt::TwistGen<lvl1param::nbit, 3>();
+    inline const std::unique_ptr<
+            std::array<std::array<std::array<raintt::SWord, lvl1param::n>, 2>, 2>>
+            raintttable = raintt::TableGen<lvl1param::nbit>();
 
-inline const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, lvl1param::n>, 2>>
-    ntttwistlvl1 = cuHEpp::TwistGen<lvl1param::nbit>();
-inline const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, lvl1param::n>, 2>>
-    ntttablelvl1 = cuHEpp::TableGen<lvl1param::nbit>();
-inline const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, lvl2param::n>, 2>>
-    ntttwistlvl2 = cuHEpp::TwistGen<lvl2param::nbit>();
-inline const std::unique_ptr<
-    const std::array<std::array<cuHEpp::INTorus, lvl2param::n>, 2>>
-    ntttablelvl2 = cuHEpp::TableGen<lvl2param::nbit>();
-inline const std::unique_ptr<
-    std::array<std::array<raintt::SWord, lvl1param::n>, 2>>
-    raintttwist = raintt::TwistGen<lvl1param::nbit, 3>();
-inline const std::unique_ptr<
-    std::array<std::array<std::array<raintt::SWord, lvl1param::n>, 2>, 2>>
-    raintttable = raintt::TableGen<lvl1param::nbit>();
+    // Biggest prime number less than 2^62 and satisfies 1 mod 2N.
+    constexpr uint64_t lvl1P = 4611686018427365377ULL;
+
+template<class P>
+inline void HexlComputeInverse(Polynomial<P> &res, PolynomialNTT<P> &a,
+                           std::uint32_t n = lvl1param::n,
+                           uint64_t moduli = lvl1P)
+{
+    // std::cout << "@";
+    std::array<uint64_t, lvl1param::n> temp{};
 #ifdef USE_HEXL
-// Biggest prime number less than 2^62 and satisfies 1 mod 2N.
-constexpr uint64_t lvl1P = 4611686018427365377ULL;;
+    static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
+    nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
 #endif
+     for (int i = 0; i < lvl1param::n; i++) res[i] = temp[i];
+}
 
 template <class P>
 inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
-    {
-//        std::cout << "@";
-        std::array<uint64_t, lvl1param::n> temp;
-        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
-        nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
-        for (int i = 0; i < lvl1param::n; i++) res[i] = temp[i];
-    }
+        HexlComputeInverse<P>(res,a);
 #else
         cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
             res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
@@ -112,17 +118,26 @@ inline void TwistFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
 }
 
 template <class P>
+inline void HexlComputeForward(PolynomialNTT<P> &res, const Polynomial<P> &a,
+                               std::uint32_t n = lvl1param::n,
+                               uint64_t moduli = lvl1P)
+{
+
+        //std::cout << "*";
+    std::array<uint64_t, lvl1param::n> temp{};
+    for (int i = 0; i < n; i++) temp[i] = a[i];
+#ifdef USE_HEXL
+    static intel::hexl::NTT nttlvl1(n, moduli);
+    nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
+#endif
+}
+
+template <class P>
 inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
 #ifdef USE_HEXL
-    {
-        //std::cout << "*";
-        std::array<uint64_t, lvl1param::n> temp{};
-        for (int i = 0; i < lvl1param::n; i++) temp[i] = a[i];
-        static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
-        nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
-    }
+        HexlComputeForward<P>(res,a);
 #else
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
                                                   (*ntttwistlvl1)[1]);

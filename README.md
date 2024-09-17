@@ -3,6 +3,12 @@
 TFHEpp is full Scracthed pure C++ Ver. of TFHE. TFHEpp is slightly(about 10%) faster than original [TFHE implementation](https://github.com/tfhe/tfhe). In addition to that, THFEpp supports Circuit Bootstrapping and [Private Boootstrapping many LUT](https://eprint.iacr.org/2021/729).
 TFHEpp depends on AVX2 because we use SPQLIOS FMA. If you want run TFHEpp without AVX2, see spqlios++ branch. It include pure C++ implementation of SPQLIOS as header only library, but slow.
 
+# Building on MAC
+Only old MAC with intel processor are supported
+export following variables before build:
+1. export LDFLAGS="-L/usr/local/opt/libomp/lib"
+2. export CPPFLAGS="-I/usr/local/opt/libomp/include"
+
 # Supported Compiler
 
 GCC9.1 later are primarily supported compilers.
@@ -84,6 +90,11 @@ to use this library, add `-DUSE_SPQLIOX_AARCH64=on` to the CMake option.
 
 [HEXL](https://github.com/intel/hexl.git) is the NTT library optimized for AVX512. 
 To use this library, add `-DUSE_HEXL=on` to the CMake option.
+
+1. cmake .. -DENABLE_TEST=ON -DUSE_HEXL=on
+or
+2. cmake .. -DENABLE_TUTORIAL=ON -DUSE_HEXL=on
+
 
 TFHEpp uses the following HEXL limited functionalities in certain scenarios:
 1.	Forward NTT: ComputeForward()

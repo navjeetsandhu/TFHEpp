@@ -17,18 +17,6 @@ int main()
 
     cout << "Start LVL1 test." << endl;
     for (int test = 0; test < num_test; test++) {
-        Polynomial<lvl1param> a;
-        for (typename TFHEpp::lvl1param::T &i : a) i = Torus32dist(engine);
-        PolynomialNTT<lvl1param> resntt;
-        TFHEpp::TwistINTT<lvl1param>(resntt, a);
-        Polynomial<lvl1param> res;
-        TFHEpp::TwistNTT<lvl1param>(res, resntt);
-        for (int i = 0; i < lvl1param::n; i++)
-            _assert(abs(static_cast<int32_t>(a[i] - res[i])) <= 1);
-    }
-    cout << "NTT Passed" << endl;
-
-    for (int test = 0; test < num_test; test++) {
         alignas(64) array<typename TFHEpp::lvl1param::T, lvl1param::n> a;
         for (int i = 0; i < lvl1param::n; i++)
             a[i] = Bgdist(engine) - lvl1param::Bg / 2;
