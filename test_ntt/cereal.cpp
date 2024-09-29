@@ -79,6 +79,24 @@ int main()
         //create and set values for a Bootstrapping Key NTT (Number Theoretic Transform) in ek object.
         ek.emplacebkntt<TFHEpp::lvl01param>(sk);
 
+        const TFHEpp::BootstrappingKeyNTT<TFHEpp::lvl01param>& bknttlvl01 = ek.getbkntt<TFHEpp::lvl01param>();
+        const TFHEpp::TRGSWNTT<TFHEpp::lvl1param> trgswntt = bknttlvl01[0];
+        const TFHEpp::TRLWENTT<TFHEpp::lvl1param> trlwentt = trgswntt[0];
+        const TFHEpp::PolynomialNTT<TFHEpp::lvl1param> polynomialNTT = trlwentt[0];
+
+        std::cout << "bknttlvl01.size()" << ": " << bknttlvl01.size() << std::endl;  //636
+        std::cout << "trgswntt.size()" << ": " << trgswntt.size() << std::endl;  //6
+        std::cout << "trlwentt.size()" << ": " << trlwentt.size() << std::endl;  //2
+        std::cout << "polynomialNTT.size()" << ": " << polynomialNTT.size() << std::endl; //1024
+
+        int bkn, trgsw, trlw, poly;
+        for (bkn = 0; bkn <2; bkn++)
+            for (trgsw = 0; trgsw <2; trgsw++)
+                for (trlw = 0; trlw <2; trlw++)
+                    for (poly = 0; poly <2; poly++)
+                            std::cout << " " << ": " << bknttlvl01[bkn][trgsw][trlw][poly].value << std::endl;
+
+
         //use the secret key sk to create a Level-1 to Level-0 identity key switch key (IKS Key).
         //dentity Key Switching (IKS) are techniques used in homomorphic encryption to translate
         // between different encryption keys. In this case, it is creating a key that will translate
