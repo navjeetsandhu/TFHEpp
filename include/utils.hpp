@@ -111,12 +111,27 @@ inline uint16_t dtot16(double d)
 }
 
 // Double to Torus(32bit fixed-point number)
+// int64_t(d): This transforms d into a 64-bit integer representation.
+// If d is a floating-point number, it will be truncated towards zero.
+// d - int64_t(d): This calculates the fractional part of d.
+// The conversion to int64_t in the prior step removed the fractional
+// part of d, so subtracting this from d gives us the fractional part as the result.
+// (1LL << 32): This is a left bit shift operation applied to 1.
+// 1LL is a long long int literal for 1. The number 1 is shifted left 32 places,
+// essentially multiplying 1 by 2^32.
+// *: This multiplies the fractional part of d by 2^32.
+// int64_t(...): This second type casting operation is converting the result of the
+// multiplication to a 64-bit integer.
+// Finally, int32_t(...): The outermost casting converts the result to a 32-bit integer.
+// This truncates the upper 32 bits of the number, leaving the lower 32 bits.
 inline uint32_t dtot32(double d)
 {
     return int32_t(int64_t((d - int64_t(d)) * (1LL << 32)));
 }
 
 // Modular Gaussian Distribution over Torus
+// This adds small amount of error (stdev) to the message (center).
+//  stdev = (1/(2^25)) , center is 0xE0000000 or  0x20000000
 template <class P>
 inline typename P::T ModularGaussian(typename P::T center, double stdev)
 {

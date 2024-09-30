@@ -8,6 +8,9 @@
 #include "params.hpp"
 #include "utils.hpp"
 
+
+// // p is input:  which is  0xE0000000 or  0x20000000  for
+
 namespace TFHEpp {
 template <class P>
 TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &key)
@@ -15,6 +18,7 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &
     std::uniform_int_distribution<typename P::T> Torusdist(
         0, std::numeric_limits<typename P::T>::max());
     TLWE<P> res = {};
+ //  for lvl1param k = 1 and n = 1024, alpha = (1/(2^25)) , p is 0xE0000000 or  0x20000000
     res[P::k * P::n] = ModularGaussian<P>(p, alpha);
     for (int k = 0; k < P::k; k++)
         for (int i = 0; i < P::n; i++) {
@@ -69,7 +73,7 @@ template <class P>
 TLWE<P> tlweSymIntEncrypt(const typename P::T p, const Key<P> &key)
 {
     if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return tlweSymIntEncrypt<P>(p, P::alpha, key);
+        return tlweSymIntEncrypt<P>(p, P::alpha, key); // P::alpha = (1/(2^25)) for lvl1param
     else
         return tlweSymIntEncrypt<P>(p, P::eta, key);
 }
@@ -112,6 +116,10 @@ typename P::T tlweSymIntDecrypt(const TLWE<P> &c, const Key<P> &key)
     return tlweSymIntDecrypt<P, P::plain_modulus>(c, key);
 }
 
+
+//encrypt the vector of binary (1 or 0)
+// For lvl1param  P::mu = 1 << 29 = 536870912 =  0x2000000
+// lvl1param  -P::mu = -536870912 =  0xE000000
 template <class P>
 std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,
                                      const Key<P> &key)
