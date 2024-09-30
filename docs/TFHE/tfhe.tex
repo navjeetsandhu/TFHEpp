@@ -1,0 +1,434 @@
+\documentclass{techrep}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Definition Starts
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\newcommand{\centeripe}[1]{\begin{center}\Ipe{#1}\end{center}}
+\newcommand{\comment}[1]{}
+
+\newcommand{\centerpsfig}[1]{\centerline{\psfig{#1}}}
+
+\newcommand{\seclabel}[1]{\label{sec:#1}}
+\newcommand{\Secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\secref}[1]{\mbox{Section~\ref{sec:#1}}}
+
+\newcommand{\alglabel}[1]{\label{alg:#1}}
+\newcommand{\Algref}[1]{Algorithm~\ref{alg:#1}}
+\newcommand{\algref}[1]{\mbox{Algorithm~\ref{alg:#1}}}
+
+\newcommand{\applabel}[1]{\label{app:#1}}
+\newcommand{\Appref}[1]{Appendix~\ref{app:#1}}
+\newcommand{\appref}[1]{\mbox{Appendix~\ref{app:#1}}}
+
+\newcommand{\tablabel}[1]{\label{tab:#1}}
+\newcommand{\Tabref}[1]{Table~\ref{tab:#1}}
+\newcommand{\tabref}[1]{Table~\ref{tab:#1}}
+
+\newcommand{\figlabel}[1]{\label{fig:#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\figref}[1]{\mbox{Figure~\ref{fig:#1}}}
+
+\newcommand{\eqlabel}[1]{\label{eq:#1}}
+%\renewcommand{\eqref}[1]{(\ref{eq:#1})}
+\newcommand{\myeqref}[1]{(\ref{eq:#1})}
+\newcommand{\Eqref}[1]{Equation~(\ref{eq:#1})}
+
+\newtheorem{theorem}{Theorem}{\bfseries}{\itshape}
+\newcommand{\thmlabel}[1]{\label{thm:#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{thm:#1}}
+
+\newtheorem{lemma}{Lemma}{\bfseries}{\itshape}
+\newcommand{\lemlabel}[1]{\label{lem:#1}}
+\newcommand{\lemref}[1]{Lemma~\ref{lem:#1}}
+
+\newtheorem{conj}{Conjecture}{\bfseries}{\itshape}
+\newcommand{\conjlabel}[1]{\label{lem:#1}}
+\newcommand{\conjref}[1]{Conjecture~\ref{lem:#1}}
+
+\newtheorem{corollary}{Corollary}{\bfseries}{\itshape}
+\newcommand{\corlabel}[1]{\label{cor:#1}}
+\newcommand{\corref}[1]{Corollary~\ref{cor:#1}}
+
+\newtheorem{obs}{Observation}{\bfseries}{\itshape}
+\newcommand{\obslabel}[1]{\label{obs:#1}}
+\newcommand{\obsref}[1]{Observation~\ref{obs:#1}}
+
+\newtheorem{clm}{Claim}{\bfseries}{\itshape}
+\newcommand{\clmlabel}[1]{\label{clm:#1}}
+\newcommand{\clmref}[1]{Claim~\ref{clm:#1}}
+
+\newtheorem{assumption}{Assumption}{\bfseries}{\rm}
+\newenvironment{ass}{\begin{assumption}\rm}{\end{assumption}}
+\newcommand{\asslabel}[1]{\label{ass:#1}}
+\newcommand{\assref}[1]{Assumption~\ref{ass:#1}}
+
+\newcommand{\proclabel}[1]{\label{alg:#1}}
+\newcommand{\procref}[1]{Procedure~\ref{alg:#1}}
+
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}
+\newcommand{\deflabel}[1]{\label{rem:#1}}
+\newcommand{\defref}[1]{Definition~\ref{rem:#1}}
+
+
+\newtheorem{rem}{Remark}
+\newcommand{\remlabel}[1]{\label{rem:#1}}
+\newcommand{\remref}[1]{Remark~\ref{rem:#1}}
+
+\newtheorem{lesson}{Lesson}
+\newcommand{\leslabel}[1]{\label{les:#1}}
+\newcommand{\lesref}[1]{Lesson~\ref{les:#1}}
+
+\newtheorem{op}{Open Problem}
+\newcommand{\oplabel}[1]{\label{op:#1}}
+\newcommand{\opref}[1]{Open Problem~\ref{op:#1}}
+\newtheorem{prb}{Problem}{\bfseries}{\rm}
+
+\theoremstyle{plain}
+
+\newcommand{\etal}{et al.}
+
+\newcommand{\keywords}[1]{\noindent\textbf{Keywords:} #1}
+\newcommand{\voronoi}{Vorono\u\i}
+\newcommand{\ceil}[1]{{\lceil #1 \rceil}}
+\newcommand{\Ceil}[1]{{\left\lceil #1 \right\rceil}}
+\newcommand{\floor}[1]{{\lfloor #1 \rfloor}}
+\newcommand{\Floor}[1]{{\left\lfloor #1 \right\rfloor}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Sp}{\mathbb{S}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\DD}{\ensuremath{\mathcal{D}}}
+
+
+\usepackage{verbatim}
+\usepackage{algorithm2e}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{amsthm,amsmath,graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[letterpaper]{hyperref}
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{linkblue}{named}{Blue}
+\hypersetup{colorlinks=true, linkcolor=linkblue,  anchorcolor=linkblue,
+	citecolor=linkblue, filecolor=linkblue, menucolor=linkblue,
+	urlcolor=linkblue}
+\setlength{\parskip}{1ex}
+\usepackage{wasysym}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{thmtools, thm-restate}
+\usepackage{wrapfig}
+%\usepackage{mathrsfs}
+\usepackage{float}
+\usepackage{stackrel}
+\usepackage{fixfoot}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathrsfs}
+\usepackage{venturis}
+\usepackage{placeins}
+
+\listfiles
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+
+\newcommand{\notes}[1]{\marginpar{\tiny{#1}}}
+
+\newlength\problemsep
+\setlength\problemsep{10pt}
+\newcommand{\given}{}
+\newcommand{\find}{}
+\newcommand{\nogo}{\textsc{impossible}}
+\newcommand{\go}{\textsc{possible}}
+%\newcommand{\bdry}[1]{\ensuremath{\textsl{bd}\  #1}}
+\newcommand{\bdP}{\ensuremath{\partial P}}
+%\newcommand{\bdPccw}[1]{\ensuremath{\bdP^{ccw}(#1)}}
+\newcommand{\bdPccw}[1]{\ensuremath{\partial^{+}(#1)}}
+\newcommand{\bdPcw}[1]{\ensuremath{\partial^{-}(#1)}}
+\newcommand{\ERCW}[1]{\ensuremath{R_{\textsl{cw}}( #1 )}}
+\newcommand{\ERCCW}[1]{\ensuremath{R_{\textsl{ccw}}( #1 )}}
+%\newcommand{\ERSPLIT}[1]{\ensuremath{R_{\textsl{split}}( #1 )}}
+\newcommand{\ERSPLIT}[1]{\ensuremath{S( #1 )}}
+\newcommand{\vangle}[1]{\ensuremath{u_{#1}}}
+\newcommand{\vanglecw}[1]{\ensuremath{u_{#1}^{\textsl{\tiny cw}}}}
+\newcommand{\vangleccw}[1]{\ensuremath{u_{#1}^{\textsl{\tiny ccw}}}}
+%\newcommand{\vangleccw}[1]{\ensuremath{w_{#1 (ccw)}}}
+\newcommand{\accumccw}[1]{\ensuremath{\textsl{accum}^{\textsl{\tiny ccw}}(#1)}}
+\newcommand{\accumcw}[1]{\ensuremath{\textsl{accum}^{\textsl{\tiny cw}}(#1)}}
+\newcommand{\pifrac}[2]{\ensuremath{\frac{#1 \pi}{#2}}}
+\newcommand{\piover}[1]{\pifrac{}{#1}}
+\newcommand{\piovertwo}{\ensuremath{\frac{\pi}{2}}}
+\newcommand{\threepiovertwo}{\ensuremath{\frac{3\pi}{2}}}
+\newcommand{\tqpi}{\pifrac{3}{4}}
+\newcommand{\sed}[1]{\ensuremath{D(#1)}}
+\newcommand{\bd}[1]{\ensuremath{\partial D(#1)}}
+
+
+
+\newenvironment{problem}[1] {			% the typesetting here needs work.
+	\vspace{\problemsep}
+	\noindent{\scshape \underline{#1}}
+	\renewcommand\descriptionlabel[1]%
+	{\hspace{\labelsep}\textsc{##1}}
+	\renewcommand{\given}{\item[Given:]}
+	\renewcommand{\find}{\item[Find:]}
+	\begin{description}
+	}{
+	\end{description}
+	\vspace{\problemsep}
+}
+
+%\newcommand{\jit}[1]{\textcolor{blue}{Jit: #1}}
+\newcommand{\jit}[1]{}
+\newcommand{\tom}[1]{\textcolor{teal}{Tom: #1}}
+
+\bibliographystyle{abbrv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Definitions over
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\usepackage{graphicx} % Required for inserting images
+
+\title{TFHE}
+%\author{Navjeet Sandhu}
+%\date{September 2024}
+
+\begin{document}
+
+	\maketitle
+
+	\section{Introduction}
+TFHE is a Fully Homomorphic Encryption (FHE) scheme. It is an encryption scheme that allows you to perform computations over encrypted data. 
+
+	\section{TFHE Ciphertexts}
+ TFHE mainly uses three ciphertext types: LWE, RLWE, and RGSW. All of them have different properties which will be useful in the homomorphic operations
+
+	\section{GLWE}
+General LWE, or GLWE includes both of LWE, RLWE
+
+\subsection{LWE}
+LWE encryption supports encrypting small-bit-width integers by placing those bits in the most significant bits of a machine word—for simplicity, say it’s a 4-bit integer in the top-most bits of a 32-bit integer with all the other bits initialized to zero, and call that whole encoded plaintext. The secret key is a random binary vector of some fixed length chosen to achieve a specific security. Then, sample a random length vector of 32-bit integers to encrypt, take a dot product with the secret key, add the message, and add some random noise. The encrypted value is both the random samples chosen and the noise-masked result. LWE decryption then reverses this process: re-compute the dot product and subtract it from the output of the encryption. But at the end, you must apply a rounding step to remove the noise added to the ciphertext during encryption. Because the message is in the highest-order bits of the message (say, bits 28-31) and because the noise added was not very large, rounding to the nearest multiple removes it. 
+
+\subsection{RLWE}
+In RLWE, the scalar multiplications and additions from LWE are upgraded to polynomial multiplications and additions. We pick a polynomial degree as the maximum degree (say 1024), the coefficients are always integers modulo some chosen modulus q, and finally, we pick a polynomial, usually $x^n+1$, and represent the result of every operation as a remainder when divided by that polynomial. One or more small integer messages are encoded into a polynomial to encrypt. The secret key is a list of random polynomials with binary coefficients, and the samples are random polynomials with uniformly random mod q coefficients. Then, you take a dot product, add the message, and add a similar “noise polynomial” to mask the result. The main advantage of using RLWE over LWE is that you can pack many messages into a single polynomial and the homomorphic operations you apply to all the messages. 
+
+
+	\subsection{Secret key}
+To generate any ciphertext, we first need a secret key. With  GLWE ciphertexts, the secret key is a list of 
+ random polynomials from R:
+
+	\begin{align*}
+		\overrightarrow{S} &= (S_0,S_1,...S_{k-1}) \in R^k
+	\end{align*}
+
+The coefficients of the elements can be sampled from a uniform binary distribution, a uniform ternary distribution, a Gaussian distribution, or a uniform distribution. Please note that we can find parameters to achieve the desired security level for these secret keys.
+
+\subsubsection{Example}
+
+Let’s choose N (degree or dimension) = 4 and k =2. Let's sample the secret key with a uniform binary distribution of a degree N — 1 polynomial. In this example, the secret keys are [0,1,1,0] and [1,0,1,1].
+
+
+
+\begin{align*} 
+\overrightarrow{S} &= ([0,1,1,0],[1,0,1,1]) \in R^2 \\ 
+\overrightarrow{S} &= (0 + x + x^2 + 0x^3,1 + 0x + x^2 + x^3) \in R^2 \\ 
+\overrightarrow{S} &= (x + x^2, 1 + x^2 + x^3) \in R^2 \\ 
+\end{align*}
+
+\subsubsection{Example TFHEpp lvl1param}
+For TFHEpp lvl1param, the value for N = $1024$, k = $1$. The key value maximum is $1$, and the minimum is $-1$. For example:
+
+\begin{align*} 
+\overrightarrow{S} &= ([0, 1, 0, -1, -1 ..... 1]) \in R^1 \\ 
+\overrightarrow{S} &= (x - x^3 - x^5 - x^6 .... + x^{1023}) \in R \\ 
+\end{align*}
+
+
+	\subsection{Message}
+
+The message is a polynomial of degree smaller than N with coefficients whose maximum value depends on the value p.
+
+	\begin{align*}
+		M \in R^p
+	\end{align*}
+
+\subsubsection{Example}
+
+Let’s choose N (degree) = 4 and p (plain modulus) = 4. The coefficient values of the message are stored in 2 bits (p=4 = $2^2$). The possible coefficient value in binary format is {11, 10, 00, and 01}. The possible coefficient value in a signed integer is {-2, -1, 0 and 1}. The possible coefficient value in an unsigned integer is {3, 2, 0 and 1}. Let Message be [-2 1, 0 -1] in this example.
+
+
+	\subsection{Mask}
+To encrypt the message, we need to sample a uniformly random mask with coefficients whose maximum value depends on q (modulus).
+
+	\begin{align*}
+		\overrightarrow{A} &= (A_0,A_1,...A_{k-1}) \in R_q^k
+	\end{align*}
+
+\subsubsection{Example}
+
+Let’s choose N (degree) = 4, k =2 and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. In this example, let Mask be [17, -2, -24, 9], [-14, 0, -1, 21].
+
+\begin{align*} 
+\overrightarrow{A} &= ([17, -2, -24, 9], [-14, 0, -1, 21]) \in R_{64}^2 \\ 
+\overrightarrow{A} &= (17-2x -24x^2 +9x^3,-14-x^2+21x^3) \in R_{64}^2 \\ 
+\end{align*}
+
+
+	\subsection{Error}
+We must add a discrete Gaussian Error (small coefficients) to encrypt the message.
+$\chi_{\mu,\sigma}$ is a Gaussian probability distribution with mean $\mu$ and standard deviation $\sigma$
+
+	\begin{align*}
+		E \in R_q
+	\end{align*}
+
+\subsubsection{Example}
+
+Let's add [-1,1,0,1] error.
+
+\begin{align*} 
+    E &= ([-1,1,0,1]) \in R_q \\ 
+    E &= (x + x^2,1+x^3) \in R_q \\ 
+\end{align*}
+
+	\subsection{Body}
+The body of an encrypted message is:
+
+	\begin{align*}
+		B &= \sum_{i=0}^{k-1}A_i . S_i + \bigtriangleup M + E \in R_q  \\
+	\end{align*}
+
+where $\bigtriangleup$ = q/p.
+
+\subsubsection{Example}
+Let’s continue with previous examples for N (degree) = 4, p (plain modulus) = 4, k = 2, q = 64 (modulo) and $\bigtriangleup$ = q/p = 16.
+
+	\begin{align*}
+		B &= \sum_{i=0}^{k-1}A_i . S_i + \bigtriangleup M + E \in R_q  \\
+             &= \sum_{i=0}^2A_i . S_i + 16M + E \in R_q  \\
+             &= A_0.S_0 + A_1.S_1 + 16M + E \in R_q  \\
+	\end{align*}
+
+
+When we compute $R_q$, we do polynomial operations modulo $x^N + 1$ and modulo q. 
+To reduce modulo $x^N + 1$, you can observe that:
+
+
+        $\quad \quad \quad  x^N$  = $x^N \equiv$ -1 mod $x^N$ + 1
+
+So
+	\begin{align*}
+		 A_0.S_0 &=  (17-2x -24x^2 +9x^3).(x + x^2) \\
+            &= 17x + (17-2)x^2 + (-2-24)x^3 + (-24+9)x^4 + 9x^5  \\
+            &= 17x + 15x^2 -26x^3 - 15x^4 + 9x^5  \\
+            &= 17x + 15x^2 -26x^3 + (-15 + 9x)x^4  \\
+            &= 17x + 15x^2 -26x^3 + (-15 + 9x)(-1)  \\
+            &= 17x + 15x^2 -26x^3 + 15  -9x  \\
+            &= 15 + 8x + 15x^2 -26x^3  \in R_q \\
+	\end{align*}
+
+In the same way:
+	\begin{align*}
+		 A_1.S_1 &=  -13-20x+28x+7x3 \in R_q \\
+         \bigtriangleup M &= -32 +16x - 16x^3  \\
+	\end{align*}
+
+Then:
+	\begin{align*}
+		 B &=   A_0.S_0 + A_1.S_1 + \bigtriangleup M + E \in R_q  \\
+          &= -31 + 5x - 21x^2 + 30x^3 \in R_q  \\
+	\end{align*}
+
+
+	\subsection{Encryption}
+A GLWE ciphertext encrypting the message M under the secret key $\overrightarrow{S}$ is a tuple:
+
+	\begin{align*}
+GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M)	&=	 (A_0,A_1,...A_{k-1}, B) \subseteq  R_{q}^{k+1} \\
+	\end{align*}
+
+\subsubsection{Example}
+Let’s continue with previous examples for N (degree) = 4, p (plain modulus) = 4, k = 2, q = 64 (modulo) and $\bigtriangleup$ = q/p = 16.
+
+
+	\begin{align*}
+        GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M)	&=	 (A_0,A_{1}, B) \subseteq  R_{64}^{3} \\
+        &= (17-2x -24x^2 +9x^3, -14-x^2+21x^3, -31 + 5x - 21x^2 + 30x^3) \subseteq  R_{64}^{3} 
+	\end{align*}
+
+	\subsection{Decryption}
+We can decrypt the ciphertext using the following equation:
+
+	\begin{align*}
+		B  - \sum_{i=0}^{k-1}A_i . S_i  &= \bigtriangleup M + E   \\
+             (\bigtriangleup M + E)/\bigtriangleup  &= M \\
+	\end{align*}
+
+Observe that the message M is in the MSB part (thanks to the multiplication by $\bigtriangleup$ ) while E is in the LSB part. If |E| <  $\bigtriangleup$/2 (so if every coefficient of |$e_i$| < $\bigtriangleup$/2), then the second step of the decryption M returns as expected. 
+
+\subsubsection{Example}
+Let’s continue with previous examples. 
+
+	\begin{align*}
+            B &= -31 + 5x - 21x^2 + 30x^3 \\
+            A_0.S_0 &= 15 + 8x + 15x^2 -26x^3 \\
+            A_1.S_1 &=  -13-20x+28x+7x3 \\
+		\bigtriangleup M + E  &= B  - \sum_{i=0}^{1}A_i . S_i  \\
+            \bigtriangleup M + E  &= B  - A_0.S_0 - A_1.S_1 \\
+            \bigtriangleup M + E &= -29 + 17x - 15x^2 \\
+            M &= (-29 + 17x - 15x^3)/ \bigtriangleup \\
+            M &= (-29 + 17x - 15x^3)/ 16 \\
+                &= -2 + x -x^2 \\
+	\end{align*}
+ 
+	\subsection{LWE and RLWE from GLWE }
+ When we instantiate GLWE with $k = n$ and $N = 1$, we get LWE. Observe that $ R_q$ is actually $ Z_q$ when $ N = 1$. We use small letters for (modular) integers (i.e., b, m, e ...).
+
+ 	\begin{align*}
+		b &= \sum_{i=0}^{k-1}a_i . s_i + \bigtriangleup m + e \in \Z_{q}  \\
+	\end{align*}
+
+When we instantiate GLWE with $k = 1$, we get RLWE. Here, we use capital letters for polynomials. 
+
+	\begin{align*}
+		B &= A . S + \bigtriangleup M + E \in R_q  \\
+	\end{align*}
+
+\section{GLev }
+GLev is an intermediate ciphertext type between GLWE and GGSW ciphertexts, which can be very useful for better understanding GGSW ciphertexts. GLev can be seen as a generalization of the well-known Powers of two encryptions used in BGV. A GLev ciphertext contains redundancy: a list of GLWE ciphertexts encrypting the same message 
+ with different and exact scaling factors $\bigtriangleup$. Two parameters are necessary to define these special 
+$\bigtriangleup$ ’s: a base $\beta$
+and many levels l $\in \Z$.  $\beta$ and q are the power of 2. 
+\begin{align*}
+ \bigtriangleup^i = \frac{q}{\beta^i}
+\end{align*}
+
+The secret key is the same as for GLWE ciphertexts. To decrypt, it is sufficient to decrypt one of the GLWE ciphertexts with the corresponding scaling factor. The set of GLev encryptions of the same message, under the secret key $\overrightarrow{S}$, with Gaussian noise with standard deviation, with base $\beta$ and level l, will be noted  ${GLev}_{S, \sigma}^{\beta, l}(M)$
+
+
+	\begin{align*}
+(GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^1} M) \times ... \times GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^l} M))	&=	{GLev}_{S, \sigma}^{\beta, l}(M)  \subseteq  R_{q}^{l{k+1}}  \\
+	\end{align*}
+
+\subsection{Lev and RLev from GLev }
+In the same way that we saw that GLWE was a generalization for both LWE and RLWE, we can observe that GLev can be specialized into Lev and RLev by following the same rules. When we instantiate GLev with $k = n$ and $N = 1$, we get Lev.  When we instantiate GLev with $k = 1$, we get RLev.
+
+\end{document}
