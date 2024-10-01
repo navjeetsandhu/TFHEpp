@@ -9,22 +9,32 @@
 #include "utils.hpp"
 
 
-// // p is input:  which is  0xE0000000 or  0x20000000  for
-
+//  p is input message:  which is  0xE0000000 or  0x20000000
+//  for lvl1param p is 0xE0000000(3758096384) for encrypting 0
+//  for lvl1param p is 536870912 (0x20000000) for encrypting 1
+//  for lvl1param alpha = (1/(2^25)) for adding some Gaussian noise
 namespace TFHEpp {
 template <class P>
 TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &key)
 {
-    std::uniform_int_distribution<typename P::T> Torusdist(
-        0, std::numeric_limits<typename P::T>::max());
     TLWE<P> res = {};
- //  for lvl1param k = 1 and n = 1024, alpha = (1/(2^25)) , p is 0xE0000000 or  0x20000000
-    res[P::k * P::n] = ModularGaussian<P>(p, alpha);
-    for (int k = 0; k < P::k; k++)
-        for (int i = 0; i < P::n; i++) {
-            res[k * P::n + i] = Torusdist(generator);
-            res[P::k * P::n] += res[k * P::n + i] * key[k * P::n + i];
+                                   //  for lvl1param k = 1 and n = 1024 ,
+    int last_index = P::k * P::n;  //  for lvl1param last_index = 1024
+    int k, i, j;
+    auto numeric_limits = std::numeric_limits<typename P::T>::max(); // Navjeet won't work for hexl
+
+    std::uniform_int_distribution<typename P::T> Torusdist(0,numeric_limits);
+
+    // add some noise i.e. for message 536870912 add some noise and make it 536870870
+    res[last_index] = ModularGaussian<P>(p, alpha);
+
+    for (k = 0; k < P::k; k++)
+        for (i = 0; i < P::n; i++) {
+            j = k * P::n + i;
+            res[j] = Torusdist(generator);
+            res[last_index] += res[j] * key[j];
         }
+    // for lvl1param k = 1 and n = 1024, res.size is 1025,
     return res;
 }
 
@@ -128,6 +138,7 @@ std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,
 #pragma omp parallel for
     for (int i = 0; i < p.size(); i++)
         c[i] = tlweSymEncrypt<P>(p[i] ? P::mu : -P::mu, key);
+
     return c;
 }
 
