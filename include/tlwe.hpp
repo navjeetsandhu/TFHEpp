@@ -95,16 +95,21 @@ template <class P>
 typename P::T tlweSymPhase(const TLWE<P> &c, const Key<P> &key)
 {
     typename P::T phase = c[P::k * P::n];
+    // remove the mask from the message
     for (int k = 0; k < P::k; k++)
         for (int i = 0; i < P::n; i++)
             phase -= c[k * P::n + i] * key[k * P::n + i];
     return phase;
 }
 
+// Decrypt the message
 template <class P>
 bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
 {
+    // remove the mask from the message
     typename P::T phase = tlweSymPhase<P>(c, key);
+    // phase has only message plus error
+    // if MSB bit is set than text message is zero or else it is 1.
     bool res =
         static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
     return res;
