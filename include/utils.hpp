@@ -132,6 +132,7 @@ inline uint32_t dtot32(double d)
 // Modular Gaussian Distribution over Torus
 // This adds small amount of error (stdev) to the message (center).
 //  stdev = (1/(2^25)) , center is 0xE0000000 or  0x20000000
+// i.e. for center 536870912 add some noise and make it 536870870
 template <class P>
 inline typename P::T ModularGaussian(typename P::T center, double stdev)
 {

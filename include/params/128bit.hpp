@@ -54,8 +54,8 @@ struct lvl1param {
         ErrorDistribution::ModularGaussian;
     static const inline double alpha = std::pow(2.0, -25);  // Gaussian fresh noise 2^{-25}, stdev
     using T = uint32_t;                                 // Torus representation
-                                                          // mu is value for message if bit = 1
-    static constexpr std::make_signed_t<T> mu = 1 << 29; // 536870912, 0x2000000,
+                                                          // mu is value for message if message is = 1
+    static constexpr std::make_signed_t<T> mu = 1 << 29; // 536870912 (0x2000000) for 1
     static constexpr uint32_t plain_modulus = 8;  // MSB 3 bits are for message 001_ (0x2) or 111_ (0xE)
     static constexpr double delta =
         static_cast<double>(1ULL << std::numeric_limits<T>::digits) /

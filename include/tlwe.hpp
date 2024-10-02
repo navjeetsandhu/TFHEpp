@@ -21,11 +21,12 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &
                                    //  for lvl1param k = 1 and n = 1024 ,
     int last_index = P::k * P::n;  //  for lvl1param last_index = 1024
     int k, i, j;
-    auto numeric_limits = std::numeric_limits<typename P::T>::max(); // Navjeet won't work for hexl
+    auto numeric_limits = std::numeric_limits<typename P::T>::max(); // Navjeet hexl todo
 
+    //This is for mask coefficients
     std::uniform_int_distribution<typename P::T> Torusdist(0,numeric_limits);
 
-    // add some noise i.e. for message 536870912 add some noise and make it 536870870
+    // add some noise i.e. for message (p) 536870912 add some noise and make it 536870870
     res[last_index] = ModularGaussian<P>(p, alpha);
 
     for (k = 0; k < P::k; k++)
@@ -35,6 +36,8 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &
             res[last_index] += res[j] * key[j];
         }
     // for lvl1param k = 1 and n = 1024, res.size is 1025,
+    // first 1024 are coefficients of masks and
+    // last one is message which is masked with mask*key and noise
     return res;
 }
 
