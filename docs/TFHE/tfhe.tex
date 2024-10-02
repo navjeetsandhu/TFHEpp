@@ -218,6 +218,14 @@
 	\section{Introduction}
 TFHE is a Fully Homomorphic Encryption (FHE) scheme. It is an encryption scheme that allows you to perform computations over encrypted data. 
 
+ 	\subsection{Integer ring modulo $\Z_{q}$}
+	An integer ring modulo q (also called integers modulo a prime number), denoted by $\Z_{q}$, is a mathematical structure known as a cyclic group or finite field in abstract algebra. Specifically, it is the set of residue classes of integers modulo q. This means it's the set of all possible remainders when integers are divided by q. For example, if q equals 2, then $\Z_{q}$ (which is $\Z_{2}$ in this case) includes only 0 and 1 because any integer either leaves a remainder of 0 or 1 when divided by 2. In the field of cryptography, we typically work with finite fields. The exciting thing about working in a finite field is that the polynomial coefficients “wrap around” when multiplied. So, regardless of how much polynomial arithmetic we perform, the polynomial coefficients can still be bounded in a fixed range, which is very attractive from an implementation perspective. If q equals 17, then $\Z_{q}$ (which is $\Z_{17}$ in this case) includes only 0 to 16 because any integer leaves a remainder of 0 to 16 when divided by 17. Hence the vector multiplication for vectors $g = [1, 2, 3, 4]$, and $h = [5, 6, 7, 8]$ with modulo a prime number $q = 17$ is  $[5, 16, 0, 9, 10, 1, 15]$
+
+	\subsection{Congruence}
+	The symbol $\equiv$ denotes congruence and is different from equality. While equality means that items are the same, congruence means items have the same remainder when divided by mod. In a ring $\Z_{7681}$  and $n = 4$, the 4-th root of unity, which satisfy the condition $\omega^4 \equiv 1$ mod $7681$ are ${3383, 4298, 7680}$.
+
+
+
 	\section{TFHE Ciphertexts}
  TFHE mainly uses three ciphertext types: LWE, RLWE, and RGSW. All of them have different properties which will be useful in the homomorphic operations
 
@@ -229,6 +237,19 @@ LWE encryption supports encrypting small-bit-width integers by placing those bit
 
 \subsection{RLWE}
 In RLWE, the scalar multiplications and additions from LWE are upgraded to polynomial multiplications and additions. We pick a polynomial degree as the maximum degree (say 1024), the coefficients are always integers modulo some chosen modulus q, and finally, we pick a polynomial, usually $x^n+1$, and represent the result of every operation as a remainder when divided by that polynomial. One or more small integer messages are encoded into a polynomial to encrypt. The secret key is a list of random polynomials with binary coefficients, and the samples are random polynomials with uniformly random mod q coefficients. Then, you take a dot product, add the message, and add a similar “noise polynomial” to mask the result. The main advantage of using RLWE over LWE is that you can pack many messages into a single polynomial and the homomorphic operations you apply to all the messages. 
+
+	\subsection{LWE and RLWE from GLWE }
+ When we instantiate GLWE with $k = n$ and $N = 1$, we get LWE. Observe that $ R_q$ is actually $ Z_q$ when $ N = 1$. We use small letters for (modular) integers (i.e., b, m, e ...).
+
+ 	\begin{align*}
+		b &= \sum_{i=0}^{k-1}a_i . s_i + \bigtriangleup m + e \in \Z_{q}  \\
+	\end{align*}
+
+When we instantiate GLWE with $k = 1$, we get RLWE. Here, we use capital letters for polynomials. 
+
+	\begin{align*}
+		B &= A . S + \bigtriangleup M + E \in R_q  \\
+	\end{align*}
 
 
 	\subsection{Secret key}
@@ -274,23 +295,36 @@ The message is a polynomial of degree smaller than N with coefficients whose max
 
 Let’s choose N (degree) = 4 and p (plain modulus) = 4. The coefficient values of the message are stored in 2 bits (p=4 = $2^2$). The possible coefficient value in binary format is {11, 10, 00, and 01}. The possible coefficient value in a signed integer is {-2, -1, 0 and 1}. The possible coefficient value in an unsigned integer is {3, 2, 0 and 1}. Let Message be [-2 1, 0 -1] in this example.
 
+\subsubsection{TFHEpp Example}
+In the TFHEpp library, each message is binary (i.e., 1 or 0 only). For 16-bit integers, we will have 16 messages, one for each bit. 
 
 	\subsection{Mask}
-To encrypt the message, we need to sample a uniformly random mask with coefficients whose maximum value depends on q (modulus).
+To encrypt the message, we must sample a uniformly random mask with coefficients whose maximum value depends on q (modulus).
 
 	\begin{align*}
 		\overrightarrow{A} &= (A_0,A_1,...A_{k-1}) \in R_q^k
 	\end{align*}
 
-\subsubsection{Example}
+\subsubsection{GLWE Example}
 
-Let’s choose N (degree) = 4, k =2 and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. In this example, let Mask be [17, -2, -24, 9], [-14, 0, -1, 21].
+Let’s choose N (degree) = 4, k =2 and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. Let Mask be [17, -2, -24, 9], [-14, 0, -1, 21] in this example.
 
 \begin{align*} 
 \overrightarrow{A} &= ([17, -2, -24, 9], [-14, 0, -1, 21]) \in R_{64}^2 \\ 
 \overrightarrow{A} &= (17-2x -24x^2 +9x^3,-14-x^2+21x^3) \in R_{64}^2 \\ 
 \end{align*}
 
+\subsubsection{RLWE Example}
+
+Let’s choose N (degree) = 4, k =1 (for RLWE) and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. Let Mask be [17, -2, -24, 9] in this example.
+
+\begin{align*} 
+\overrightarrow{A} &= ([17, -2, -24, 9]) \in R_{64}^1 \\ 
+\overrightarrow{A} &= (17-2x -24x^2 +9x^3) \in R_{64} \\ 
+\end{align*}
+
+\subsubsection{TFHEpp code}
+In file tlwe.hpp function tlweSymEncrypt(), it adds mask using std::uniform$\textunderscore$int$\textunderscore$distribution() C++ utility. 
 
 	\subsection{Error}
 We must add a discrete Gaussian Error (small coefficients) to encrypt the message.
@@ -308,6 +342,10 @@ Let's add [-1,1,0,1] error.
     E &= ([-1,1,0,1]) \in R_q \\ 
     E &= (x + x^2,1+x^3) \in R_q \\ 
 \end{align*}
+
+\subsubsection{TFHEpp code}
+In TFHEpp, the noise is added for each message using ModularGaussian() in the utils hpp file.  
+i.e. Noise standard deviation for lvl1param is $2^{-25}$. i.e. if the $\bigtriangleup$ message is 536870912, add some noise and make it 536870870. 
 
 	\subsection{Body}
 The body of an encrypted message is:
@@ -374,6 +412,22 @@ Let’s continue with previous examples for N (degree) = 4, p (plain modulus) = 
         &= (17-2x -24x^2 +9x^3, -14-x^2+21x^3, -31 + 5x - 21x^2 + 30x^3) \subseteq  R_{64}^{3} 
 	\end{align*}
 
+\subsubsection{TFHEpp Example}
+In the TFHEpp library, each message is binary (i.e., 1 or 0). The following formula transforms $\bigtriangleup M$ the message in the function bootsSymEncrypt() tlwe hpp file. 
+	\begin{align*}
+		message &= message ? \mu : -\mu;
+	\end{align*}
+
+For lvl1param, mu = 1 << 29 = 536870912 (0x2000000). So for message = 1, it is transformed to 536870912 else it is transformed to -536870912 (0xE0000000). 
+
+Here are the complete steps for encryption:
+\begin{enumerate}
+  \item If the message is 1.
+  \item Transform the message to 536870912 (0x2000000) by shifting the bits of number 1 to the left 29 places
+  \item Add a small noise to the transformed message, i.e. make it make it 536870870 (0x1FFFFFF6)
+  \item Now add the mask to the message.  message + $\sum_{i=0}^{1023}A_i . S_i$, where $A_i$ is mask coefficients, and $S_i$ is secret key coefficients.  Let the masked message is 1128353980 (0x434150b). It will be the last element of the cypher text. The first 1024 elements of the cypher text are mask coefficients.
+\end{enumerate}
+
 	\subsection{Decryption}
 We can decrypt the ciphertext using the following equation:
 
@@ -398,19 +452,18 @@ Let’s continue with previous examples.
             M &= (-29 + 17x - 15x^3)/ 16 \\
                 &= -2 + x -x^2 \\
 	\end{align*}
- 
-	\subsection{LWE and RLWE from GLWE }
- When we instantiate GLWE with $k = n$ and $N = 1$, we get LWE. Observe that $ R_q$ is actually $ Z_q$ when $ N = 1$. We use small letters for (modular) integers (i.e., b, m, e ...).
 
- 	\begin{align*}
-		b &= \sum_{i=0}^{k-1}a_i . s_i + \bigtriangleup m + e \in \Z_{q}  \\
-	\end{align*}
+ \subsubsection{TFHEpp code}
+tlweSymPhase() function in tlwe.hpp removes the mask from the encrypted message.  tlweSymDecrypt() checks if MSB bit is set or not. If the MSB bit is not set, it is 1, or else it is 0. 
 
-When we instantiate GLWE with $k = 1$, we get RLWE. Here, we use capital letters for polynomials. 
 
-	\begin{align*}
-		B &= A . S + \bigtriangleup M + E \in R_q  \\
-	\end{align*}
+Here are the complete steps for decryption:
+\begin{enumerate}
+  \item The masked message is 1128353980 (0x434150b) in our previous example
+  \item Now remove the mask from the masked message.  message - $\sum_{i=0}^{1023}A_i . S_i$, where $A_i$ is mask coefficients, and $S_i$ is secret key coefficients.  The message will be 536870870 (0x1FFFFFF6). tlweSymPhase()
+   \item Function tlweSymDecrypt() checks if the MSB bit is set. For 0x1FFFFFF6 the MSB bit is not set. From it, we deduce that the message is 1.
+\end{enumerate}
+
 
 \section{GLev }
 GLev is an intermediate ciphertext type between GLWE and GGSW ciphertexts, which can be very useful for better understanding GGSW ciphertexts. GLev can be seen as a generalization of the well-known Powers of two encryptions used in BGV. A GLev ciphertext contains redundancy: a list of GLWE ciphertexts encrypting the same message 
