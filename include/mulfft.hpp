@@ -47,10 +47,11 @@ namespace TFHEpp {
             raintttable = raintt::TableGen<lvl1param::nbit>();
 
     // Biggest prime number less than 2^62 and satisfies 1 mod 2N.
-    //constexpr uint64_t lvl1P = 4611686018427365377ULL;
+    constexpr uint64_t lvl1P = 4611686018427365377ULL;
 
     // Biggest prime number less than 2^30 and satisfies 1 mod 2N.
-    constexpr uint64_t lvl1P = 1073707009;
+    //constexpr uint64_t lvl1P = 1073707009;
+    //constexpr uint64_t lvl1P = 136314881;
 
 template<class P>
 inline void HexlComputeInverse(Polynomial<P> &res, PolynomialNTT<P> &a,

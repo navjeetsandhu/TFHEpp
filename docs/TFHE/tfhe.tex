@@ -447,9 +447,11 @@ Let’s continue with previous examples.
             A_1.S_1 &=  -13-20x+28x+7x3 \\
 		\bigtriangleup M + E  &= B  - \sum_{i=0}^{1}A_i . S_i  \\
             \bigtriangleup M + E  &= B  - A_0.S_0 - A_1.S_1 \\
-            \bigtriangleup M + E &= -29 + 17x - 15x^2 \\
-            M &= (-29 + 17x - 15x^3)/ \bigtriangleup \\
-            M &= (-29 + 17x - 15x^3)/ 16 \\
+            \bigtriangleup M + E &= -33 + 17x + 49x^2 \\
+             \bigtriangleup M + E &= -33 + 17x + (64- 15)x^2 \\
+            \bigtriangleup M + E &= -33 + 17x - 15x^2 \\
+            M &= (-33 + 17x - 15x^3)/ \bigtriangleup \\
+            M &= (-33 + 17x - 15x^3)/ 16 \\
                 &= -2 + x -x^2 \\
 	\end{align*}
 
@@ -471,17 +473,212 @@ GLev is an intermediate ciphertext type between GLWE and GGSW ciphertexts, which
 $\bigtriangleup$ ’s: a base $\beta$
 and many levels l $\in \Z$.  $\beta$ and q are the power of 2. 
 \begin{align*}
- \bigtriangleup^i = \frac{q}{\beta^i}
+ \bigtriangleup^j = \frac{q}{\beta^j}
 \end{align*}
 
-The secret key is the same as for GLWE ciphertexts. To decrypt, it is sufficient to decrypt one of the GLWE ciphertexts with the corresponding scaling factor. The set of GLev encryptions of the same message, under the secret key $\overrightarrow{S}$, with Gaussian noise with standard deviation, with base $\beta$ and level l, will be noted  ${GLev}_{S, \sigma}^{\beta, l}(M)$
+The secret key is the same as for GLWE ciphertexts. To decrypt it is sufficient to decrypt one of the GLWE ciphertexts with the corresponding scaling factor. The set of GLev encryptions of the same message, under the secret key $\overrightarrow{S}$, with Gaussian noise with standard deviation, with base $\beta$ and level l, will be noted  ${GLev}_{S, \sigma}^{\beta, l}(M)$
 
 
 	\begin{align*}
-(GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^1} M) \times ... \times GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^l} M))	&=	{GLev}_{S, \sigma}^{\beta, l}(M)  \subseteq  R_{q}^{l{k+1}}  \\
+(GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^1} M) \times ... \times GLWE_{\overrightarrow{S},\sigma}(\frac{q}{\beta^l} M))	&=	{GLev}_{\overrightarrow{S}, \sigma}^{\beta, l}(M)  \subseteq  R_{q}^{l{(k+1)}}  \\
 	\end{align*}
+
+
+	\subsection{Body}
+The body of an encrypted GLev message is:
+	\begin{align*}
+		B^j &= \sum_{i=0}^{k-1}A_i^j . S_i + \frac{q}{\beta^{j+1}} M + E^j \in R_q  \\
+            j &= 0,1,...,l-1
+	\end{align*}
+
 
 \subsection{Lev and RLev from GLev }
 In the same way that we saw that GLWE was a generalization for both LWE and RLWE, we can observe that GLev can be specialized into Lev and RLev by following the same rules. When we instantiate GLev with $k = n$ and $N = 1$, we get Lev.  When we instantiate GLev with $k = 1$, we get RLev.
+
+
+\section{GGSW}
+
+Let’s put it this way:
+\begin{itemize}
+  \item A GLWE ciphertext is a vector of elements from a 1-dimensional matrix from $R_q$,
+  \item A GLev ciphertext is a vector of GLWE ciphertexts (2-dimensional matrix from $R_q$)
+  \item A GGSW ciphertext is a vector of GLev ciphertexts (3-dimensional matrix from $R_q$)
+\end{itemize}
+
+With GGSW ciphertexts, we again add some redundancy thanks to a 3rd dimension in the structure. In particular, in a GGSW, each GLev ciphertext encrypts the  product between 
+ M and one of the polynomials of the secret key $-S_i$. The last GLev in the list just encrypts the message M:
+
+	\begin{align*}
+(GLev_{\overrightarrow{S},\sigma}^{\beta, l}(-S_0 M) \times ... \times GLev_{\overrightarrow{S},\sigma}^{\beta, l}(-S_{k-1} M)	&=	{GGSW}_{\overrightarrow{S}, \sigma}^{\beta, l}(M)  \subseteq  R_{q}^{{(k+1)}l{(k+1)}}  \\
+	\end{align*}
+
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.9\columnwidth]{fig/GGSW_1.png}
+		\caption{GGSW}
+		\label{fig:GGSW}
+	\end{figure}
+
+\subsection{GSW and RGSW from GGSW }
+In the same way that we saw that GLWE was a generalization for both LWE and RLWE, we can observe that GGSW can be specialized into GSW and RGSW by following the same rules. When we instantiate GGSW with $k = n$ and $N = 1$, we get GSW.  When we instantiate GGSW with $k = 1$, we get RGSW.
+
+
+\subsection{GLWE homomorphic addition}
+
+A GLWE ciphertext encrypting the message M under the secret key $\overrightarrow{S}$ is a tuple:
+
+	\begin{align*}
+C = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M)	&=	 (A_0,A_1,...A_{k-1}, B) \subseteq  R_{q}^{k+1} \\
+	\end{align*}
+
+Now, let’s consider another GLWE ciphertext encrypting the message $M^i$ under the same secret key
+
+	\begin{align*}
+C^i = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M^i)	&=	 (A_0^i,A_1^i,...A_{k-1}^i, B^i) \subseteq  R_{q}^{k+1} \\
+	\end{align*}
+
+Then, we can add every component of the two ciphertexts and the result will be a new GLWE ciphertext encrypting the sum $M + M^i$ under the same secret key with noise that grew a little bit.
+
+	\begin{align*}
+C^+ = C+ C^i = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M+M^i)	&=	 (A_0+A_0^i,A_1+A_1^i,...A_{k+1}+A_{k-1}^i, B+B^i) \subseteq  R_{q}^{k+1} \\
+	\end{align*}
+
+\subsection{GLWE homomorphic multiplication by a constant}
+Let's now consider a small constant polynomial:
+
+	\begin{align*}
+		 \Lambda &=   \sum_{i=0}^{N-1}\Lambda_iX^i \in R  \\
+	\end{align*}
+
+Then, we can multiply the polynomial $\Lambda$ to every component of the ciphertext and the result will be a new GLWE ciphertext encrypting the product $\Lambda$. M under the same secret key with noise that grew a little bit 
+
+
+	\begin{align*}
+C^{(.)} = C.\Lambda = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup (\Lambda . M))	&=	 (\Lambda.A_0,\Lambda.A_1,...\Lambda.A_{k+1}, \Lambda.B) \subseteq  R_{q}^{k+1} \\
+	\end{align*}
+
+\subsection{Homomorphic multiplication by a large constant}
+In GLWE homomorphic multiplication by a small constant polynomial, the noise grew proportionally concerning the size of the polynomial coefficients.
+If we multiply every ciphertext component by a large constant $\beta$, the noise grows proportionally concerning its size and will compromise the result. 
+
+\subsection{Decomposition and Inner products}
+To solve the noise problem, we do decomposition and inner products. The idea involves decomposing the large constant into a small base $\beta$.
+
+\begin{align*}
+ \gamma &= \gamma_1\frac{q}{\beta^1} + \gamma_2\frac{q}{\beta^2} .... \gamma_l\frac{q}{\beta^l} 
+ {Decomp}^{\beta l} 
+\end{align*}
+
+where where the decomposed elements ($\gamma_1, \gamma_2 ... \gamma_l$) are in $\Z_\beta$ and are small and both q and $\beta$ are power of 2.
+
+\begin{align*}
+ {Decomp}^{\beta l} = (\gamma_1, \gamma_2 ... \gamma_l)
+\end{align*}
+
+As the elements of the decomposition are small, we should now be able to perform multiplication with the ciphertext and have a negligible impact on the noise. But, to obtain as a result the product of $\gamma$ and the message M
+ , we need to be able to invert the decomposition, and so to recompose $\gamma$
+. To do that, instead of multiplying the decomposed elements by a GLWE encryption of M, we multiply them by the GLev encryption of M.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=.9\columnwidth]{fig/Glev_decomp.png}
+		\caption{recompose using Glev}
+		\label{fig:GLev_decomp}
+	\end{figure}
+ In this case, the noise grows very slowly since the multiplication times the small constants have a minor impact on the noise and the following addition.
+
+\subsection{Homomorphic multiplication by a large polynomial}
+Decompose the polynomial into small polynomials  and then perform a polynomial inner product with the GLev
+
+
+\subsection{Approximate decomposition}
+
+We could do an approximate decomposition and decompose to a fixed precision (using $\beta^l < q$). In practice, this means that we will do a rounding in the LSB part before decomposing: if the decomposition parameters are appropriately chosen, this will not affect the correctness of the computations because, in the LSB part, there is always noise and the information we are interested into keeping -- the message -- is in the MSB part. 
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=.9\columnwidth]{fig/approx_decomp.png}
+		\caption{Approximate decomposition}
+		\label{fig:approx_decomp}
+	\end{figure}
+
+\subsubsection{Approximate decomposition example}
+Let’s continue with previous examples for N (degree) = 4, p (plain modulus) = 4, k = 2, q = 64 (modulo) and $\bigtriangleup$ = q/p = 16.
+
+Now let's choose a random large polynomial in $R_q$, so a polynomial of degree smaller than N = 4 and with coefficients in {-31, -30, ...-1, 0, 1, .. 32}:
+
+	\begin{align*}
+\Lambda	&=	 \Lambda_0 + \Lambda_1X^2 + \Lambda_2X^3 \\
+                 &= 28 - 5X - 30X^2 + 17X^3 
+	\end{align*}
+
+Note that each coefficient consists of six bits.  -5 in signed decimal is 59 (64-5) unsigned decimal and (1,1,1,0,1,1) in binary. Similarly, -30 in signed decimal is 34 in unsigned decimal is $2^5 + 2^1$ (1,0,0,0,1,0) in binary.
+
+Let's choose a base for the decomposition $\beta=4$ and l = 2, so $\beta^l=16$. Decomposed coefficients will be only 2 bits. We will decompose each coefficient's 4 MSB and round the last 2 LSB.
+
+We need to round all the coefficients. First, we write them in their binary decomposition (MSB on the left and LSB on the right) and then round the LSB. 
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=.9\columnwidth]{fig/rounding.png}
+		\caption{Rounding}
+		\label{fig:rounding}
+	\end{figure}
+
+The next step is the decomposition. We start from the LSB and, since the base $\beta = 4$
+We need to extract 2 bits for every round. We want the decomposition to be signed, so we want coefficients in {-2,-1,0,1}. So, in the binary decomposition, 
+
+\begin{itemize}
+  \item (0,0) corresponding to 0
+  \item (0,1) corresponding to 1
+  \item (1,0) corresponds to -2 (i.e. 2 - 4), and we add 4 to the next block in the decomposition, like a carry.
+  \item (1,1) corresponds to -1 (i.e. 3 - 4), and we add 4 to the next block in the decomposition, like a carry.
+\end{itemize}
+
+Every carry that goes beyond the MSB is thrown away. 
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=1.1\columnwidth]{fig/lsb_rounding.png}
+		\caption{decomposition of the coefficients}
+		\label{fig:rounding_lsb}
+	\end{figure}
+Now that the decomposition of the coefficients is done, we can write explicitly the decomposed polynomials as:
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=.4\columnwidth]{fig/decomp_poly.png}
+		\caption{Decomposed polynomial}
+		\label{fig:decomposed_polyn}
+	\end{figure}
+
+The coefficients of $\Lambda^{(2)}$ are the first elements of the decomposition, while the coefficients of $\Lambda^{(1)}$ are the second elements of the decomposition. To verify that the decomposition is correct, we can invert it by computing:
+
+	\begin{align*}
+\Lambda^{(1)}.\frac{q}{\beta^1}	+ \Lambda^{(2)}.\frac{q}{\beta^2}	&=	  (-2-2X^2+X^3).\frac{64}{4^1}	+ (-1-X+X^2).\frac{64}{4^2} \\
+ &= (-2-2X^2+X^3)16	+ (-1-X+X^2)4 \\
+                 &= 28 - 5X - 28X^2+16X^3 \in R_{64}
+	\end{align*}
+
+
+\section{Key switching}
+This homomorphic operation is primarily used in all the (Ring)LWE-based schemes. As the name suggests, it switches the secret key to a new one. To switch the key, we cancel the current secret key and homomorphically re-encrypt it under a new secret key. 
+
+		\begin{align*}
+{KSK}_i = (GLWE_{\overrightarrow{S^{'}},\sigma_{KSK}}(\frac{q}{\beta^1} S_i) \times ... \times GLWE_{\overrightarrow{S^{'}},\sigma_{KSK}}(\frac{q}{\beta^l} S_i))	&=	{GLev}_{\overrightarrow{S^{'}}, \sigma_{KSK}}^{\beta, l}(S_i)  \subseteq  R_{q}^{l{(k+1)}}  \\
+	\end{align*}
+	
+
+The key switching is performed as follows:
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=1\columnwidth]{fig/ksk.png}
+		\caption{Key switching}
+		\label{fig:ksk}
+	\end{figure}
+
+The secret key has switched from $\overrightarrow{S}$ to $\overrightarrow{S^{'}}$, but the message is the same.
 
 \end{document}
