@@ -307,7 +307,7 @@ To encrypt the message, we must sample a uniformly random mask with coefficients
 
 \subsubsection{GLWE Example}
 
-Let’s choose N (degree) = 4, k =2 and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. Let Mask be [17, -2, -24, 9], [-14, 0, -1, 21] in this example.
+Let’s choose N (degree) = 4, k =2 and q = 64 (modulus). The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$). The possible coefficient value in binary format is {111111, 111110 ..., 100000, 000000, 000001, ... 011111}. The possible coefficient value in a signed integer is {-31, -30, ...-1, 0, 1, .. 32}. The possible coefficient value in an unsigned integer is {64, 63, ... 33, 0, 1, ..32}. In this example, let Mask be [17, -2, -24, 9], [-14, 0, -1, 21].
 
 \begin{align*} 
 \overrightarrow{A} &= ([17, -2, -24, 9], [-14, 0, -1, 21]) \in R_{64}^2 \\ 
@@ -538,7 +538,7 @@ Now, let’s consider another GLWE ciphertext encrypting the message $M^i$ under
 C^i = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M^i)	&=	 (A_0^i,A_1^i,...A_{k-1}^i, B^i) \subseteq  R_{q}^{k+1} \\
 	\end{align*}
 
-Then, we can add every component of the two ciphertexts and the result will be a new GLWE ciphertext encrypting the sum $M + M^i$ under the same secret key with noise that grew a little bit.
+Then, we can add every component of the two ciphertexts, and the result will be a new GLWE ciphertext encrypting the sum $M + M^i$ under the same secret key with noise that grew slightly.
 
 	\begin{align*}
 C^+ = C+ C^i = GLWE_{\overrightarrow{S},\sigma}(\bigtriangleup M+M^i)	&=	 (A_0+A_0^i,A_1+A_1^i,...A_{k+1}+A_{k-1}^i, B+B^i) \subseteq  R_{q}^{k+1} \\
@@ -680,5 +680,223 @@ The key switching is performed as follows:
 	\end{figure}
 
 The secret key has switched from $\overrightarrow{S}$ to $\overrightarrow{S^{'}}$, but the message is the same.
+
+\section{External Product}
+The external product is to homomorphically multiply two ciphertexts such that the result is an encryption of the product of messages.
+
+We will use a similar approach as the one used for key switching, so we will take one of the two ciphertexts as a GLWE (the ciphertext we will decompose), and the other ciphertext will be a list of GLev ciphertexts. The difference, this time, is that with key-switching, we wanted only the mask of the first ciphertext to be multiplied by the GLev's encrypting the secret key, while this time, we want both mask and body. A ciphertext composed by GLev ciphertexts is GGSW. So, to summarize, the external product we will build is an operation that allows multiplying two ciphertexts -- a GLWE and a GGSW --, and that returns in output a new ciphertext -- a GLWE one -- encrypting the product of the two messages encrypted in the inputs. The two inputs are:
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=1.1\columnwidth]{fig/external-product.png}
+		\caption{External Product Equation}
+		\label{fig:externalproduct}
+	\end{figure}
+
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/exter-prod.png}
+		\caption{External Product}
+		\label{fig:exterprod}
+	\end{figure}
+
+\begin{itemize}
+  \item The external product is like a key switching with an additional element to the key switching key
+  \item The external product is like a key switching where we do not switch the key. In fact, in the GGSW ciphertext, the secret key used for encryption and the one used inside the GLev ciphertexts are the same.  
+  \item An external product that takes as input a GGSW ciphertext, that uses a different secret key for encrypting and uses the same secret key 
+ as the GLWE ciphertext inside the encryption, is called functional key switching. In fact it applies a function (multiplication by an encrypted constant) and switches the key at the same time.  
+
+\end{itemize}
+
+\section{Internal Product}
+A GGSW ciphertext is a list of Glev ciphertexts, and each GLev is a list of GLWE ciphertexts. So a GGSW is a list of GLWE ciphertexts. Since the external product is a product between GLWE and GGSW ciphertexts, we can define the internal product as a list of independent external products between one of the GGSW ciphertexts in input and all the GLWE ciphertexts composing the second GGSW input. The result of all these external products will be the GLWE ciphertexts that will write the GGSW output.
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/inter-prod.png}
+		\caption{Internal Product}
+		\label{fig:internalproduct}
+	\end{figure}
+
+\section{CMux}
+The CMux operation is the homomorphic version of a Mux gate, also known as a multiplexer gate. In practice, a Mux gate is an if condition: it takes three inputs, a selector (a bit $b$) and two options ( $d_0$ and $d_1$), and, depending on the value of the selector, it chooses between the two options.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.5\columnwidth]{fig/cmux.png}
+		\caption{CMux}
+		\label{fig:CMux}
+	\end{figure}
+
+It is evaluated by computing:
+
+	\begin{align*}
+b.(d_1 - d_0) + d_0	&=	 d_b
+	\end{align*}
+
+
+To evaluate it homomorphically, we encrypt b as a GGSW ciphertext, $d_0$ and $d_0$ and $d_1$ as GLWE ciphertexts. Then the multiplication in the cleartext formula is evaluated as an external product, while the other operations (addition and subtraction) are assessed as homomorphic additions and subtractions. The result is that $d_b$ is encrypted as a GLWE ciphertext.
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/cmux_1.png}
+		\caption{CMux homomorphically}
+		\label{fig:CMux1}
+	\end{figure}
+
+\section{Modulus Switching}
+ It is switching the ciphertext modulus to a new one. Then, let's consider another positive integer $\omega$ such that p < $\omega$ < q and $\omega$, p and q are all equal to a power of 2: the modulus switching from q to  $\omega$ is the operation that takes all the components of the LWE ciphertext and switches their modulus from q to $\omega$ as follows:
+
+	\begin{align*}
+\Tilde{a_i}	&=	 \frac{\omega.a_i}{q} \in \Z_\omega
+	\end{align*}
+
+This operation keeps the MSB of the original ciphertext as the message is encoded in it. However, the noise grows considerably, so it should be used carefully if we do not want to compromise the message.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/mod-switch.png}
+		\caption{Modulus Switching}
+		\label{fig:mod-switch}
+	\end{figure}
+\subsection{Modulus Switching Example}
+Let’s choose n = 4, q = 64, p = 4 and $\bigtriangleup$ = q/p = 16. The coefficient values of the mask are stored in 6 bits (q=64 = $2^6$).  A signed integer's possible mask coefficient value is {-31, -30, ...-1, 0, 1, .. 32}.  In this example, let the message be 1, the mask coefficient be (-25, 12, -3, 7), the secret key be (0.1.1.0), and the error is 1.
+
+	\begin{align*}
+    b &= a_0s_0 + a_1s_1 + a_2s_2 + a_3s_3 + \bigtriangleup m + e \\
+     &= 12- 3 + 16 + 1 \\
+     &= 26
+	\end{align*}
+So the encryption is:
+	\begin{align*}
+    c &= (a_0, a_1, a_2, a_3, b) \in \Z_q^{n+1}\\
+     &= (-25, 12, -3, 7, 26)  \in \Z_{64}^5\\
+	\end{align*}
+
+Let's perform the modulus switching by choosing $\omega = 32$.
+
+	\begin{align*}
+\Tilde{a_i}	&=	 \frac{\omega.a_i}{q} =  \frac{32.a_i}{64} =  \frac{a_i}{2}
+	\end{align*}
+
+The new encryption is:
+	\begin{align*}
+    \Tilde{c} &= (\Tilde{a_0}, \Tilde{a_1}, \Tilde{a_2}, \Tilde{a_3}, \Tilde{b}) \in \Z_\omega^{n+1}\\
+     &= (-13, 6, -2, 4, 13)  \in \Z_{32}^5\\
+	\end{align*}
+
+The new scaling factor is $\Tilde{\bigtriangleup}$ = $\frac{\omega}{p}$ = $\frac{32}{4}$ = 8. So, let's try to decrypt this new ciphertext.
+
+	\begin{align*}
+        \Tilde{\bigtriangleup}m &=	\Tilde{b} -\sum_{i=0}^{n-1}a_i.s_i \\
+           8m              &=	13 - (6 -2) \\
+           m  &=	\frac{9}{8} \\
+           m &= 1
+	\end{align*}
+
+This is the message we originally encrypted. The new error equals 1 ($ Tildebigtriangleup$m + e = 9). It is not bigger than the original error in absolute value, but it has increased because the modulus switching has reduced its distance to the message (the scaling factor has changed).
+
+\section{Sample Extraction}
+A sample extraction operation takes a GLWE ciphertext as input and extracts the encryption of one of the message's coefficients as an LWE ciphertext.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/sample-ex.png}
+		\caption{Sample Extraction}
+		\label{fig:sample-ex}
+	\end{figure}
+The operation does not increase the noise and consists of "copy-pasting" some of the coefficients of the GLWE ciphertext into the output LWE ciphertext. Imagine that we want to extract the h-th coefficient of the message M, with $0 \leq h < N$. The result LWE ciphertext will have n=kN (k=1 for RLWE) and be encrypted under the extracted secret key. We build the result LWE ciphertext c = $(a_0, a_1,...a_{n-1}, b) \in \Z_q^{n+1}$ by simply copying the coefficients of the GLWE as follows:
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/sample_ext.png}
+		\caption{Sample Extraction equation}
+		\label{fig:sample_ext}
+	\end{figure}
+
+\subsection{Sample Extraction Example}
+Let's use a generic RLWE ciphertext (so k = 1) and N = 4. 
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.7\columnwidth]{fig/sample_ext_exam.png}
+		\caption{Sample Extraction example equation}
+		\label{fig:sample_ext_exam}
+	\end{figure}
+
+\section{Blind Rotation}
+It is called blind rotation because it realizes a rotation of the coefficients of a polynomial in a blind way, meaning that we will rotate the coefficients. Still, the number of rotated positions is encrypted.
+
+\subsection{Rotation of coefficients of a polynomial}
+It simply means that we want to shift the coefficients towards the left (or the right) and to do so, we multiply the polynomial by a monomial $X^{-\pi}$ (or $X^\pi$) where $0 \leq \pi < N$ is the number of positions we want to rotate.  In practice, the rotation brought the coefficient initially in position $\pi$ down to the constant coefficient position. Of course, since the rotation is computed modulo $X^N$ + 1, the coefficients from $m_0$ to $m_{\pi-1}$ passed "on the other side" with a minus sign.
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/rotation.png}
+		\caption{Rotation of coefficients of a polynomial}
+		\label{fig:rotation}
+	\end{figure}
+
+\subsection{Rotation of coefficients of an encrypted polynomial}
+We can encrypt polynomials with GLWE ciphertexts: the rotation is performed by simply rotating all the components of the GLWE by multiplying them times $X^{-\pi}$. The result is then a GLWE ciphertext encrypting the rotated message polynomial. This operation does not increase the noise.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.9\columnwidth]{fig/rotation_1.png}
+		\caption{Rotation of coefficients of an encrypted polynomial}
+		\label{fig:rotation_1}
+	\end{figure}
+
+\subsection{Blind rotation of coefficients of an encrypted polynomial}
+The encryption of the value $\pi$ finally makes a blind rotation of coefficients of an encrypted polynomial. $\pi$ is an integer value, so we need to express it in its binary decomposition: 
+
+    \begin{align*}
+    \pi	&= \pi_0 + \pi_1.2 	 + \pi_2.2^2 + ..... + \pi_\delta.2^\delta \\
+    \end{align*}
+where:
+    \begin{align*}
+    \delta &= {log}_2(N) \\
+    \end{align*}
+What we want to compute is:    
+    \begin{align*}
+    M.X^{-\pi} &= M.X^{-(\pi_0 + \pi_1.2 	 + \pi_2.2^2 + ..... + \pi_\delta.2^\delta)} \\
+    M.X^{-\pi} &= M.X^{-\pi_0}.X^{-\pi_1.2}..X^{-\pi_2.2^2}....X^{-\pi_\delta.2^\delta}
+    \end{align*}
+
+ Since $\pi_j$ is binary, two options are possible when we compute $M.X-^{\pi_j.2^j}$. This is exactly an if condition, and we have seen that we can evaluate it as a CMux that takes as inputs:
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.6\columnwidth]{fig/cmux_3.png}
+		\caption{CMux $\pi_j$ as bit selector}
+		\label{fig:cmux_3}
+	\end{figure}
+
+The result of this operation is a GLWE encryption of $M.X^{-\pi_j.2^j}$ as we wanted.
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.6\columnwidth]{fig/cmux_4.png}
+		\caption{CMux $\pi_j$ as bit selector}
+		\label{fig:cmux_4}
+	\end{figure}
+
+The blind rotation computes recursively the product of the GLWE encryption of M by each of these monomials, so it performs a sequence of $\delta$ CMuxes. The result of a CMux becomes the new message option of the following CMux.
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=0.8\columnwidth]{fig/cmux_5.png}
+		\caption{Recursively CMux $\pi_j$ as bit selector}
+		\label{fig:cmux_5}
+	\end{figure}
+
 
 \end{document}
