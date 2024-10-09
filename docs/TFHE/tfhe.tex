@@ -845,7 +845,7 @@ It simply means that we want to shift the coefficients towards the left (or the 
 	\end{figure}
 
 \subsection{Rotation of coefficients of an encrypted polynomial}
-We can encrypt polynomials with GLWE ciphertexts: the rotation is performed by simply rotating all the components of the GLWE by multiplying them times $X^{-\pi}$. The result is then a GLWE ciphertext encrypting the rotated message polynomial. This operation does not increase the noise.
+Let's now encrypt the above polynomial. We can encrypt polynomials with GLWE ciphertexts: the rotation is performed by simply rotating all the components of the GLWE by multiplying them times $X^{-\pi}$. The result is then a GLWE ciphertext encrypting the rotated message polynomial. This operation does not increase the noise.
 
 	\begin{figure}[H]
 		\centering
@@ -855,7 +855,7 @@ We can encrypt polynomials with GLWE ciphertexts: the rotation is performed by s
 	\end{figure}
 
 \subsection{Blind rotation of coefficients of an encrypted polynomial}
-The encryption of the value $\pi$ finally makes a blind rotation of coefficients of an encrypted polynomial. $\pi$ is an integer value, so we need to express it in its binary decomposition: 
+Now encrypt the value $\pi$ also. The encryption of the value $\pi$ finally makes a blind rotation of coefficients of an encrypted polynomial. $\pi$ is an integer value, so we need to express it in its binary decomposition: 
 
     \begin{align*}
     \pi	&= \pi_0 + \pi_1.2 	 + \pi_2.2^2 + ..... + \pi_\delta.2^\delta \\
@@ -898,5 +898,56 @@ The blind rotation computes recursively the product of the GLWE encryption of M 
 		\label{fig:cmux_5}
 	\end{figure}
 
+\section{Bootstrapping}
+Bootstrapping is an operation that reduces noise and builds homomorphic functions.
+The way to go is to evaluate the decryption function homomorphically. Decryption is the only operation that can eliminate all the randomness, especially the noise.  The LWE decryption consists of two steps:
+
+\begin{itemize}
+  \item The computation of the linear combination b - $\sum_{i=0}^{n-1}a_is_i$ = $\bigtriangleup m$ + e $\in \Z_q$
+  \item The rescale and rounding $\frac{\bigtriangleup m + e}{\bigtriangleup}$
+\end{itemize}
+
+\subsection{Bootstrapping key}
+Bootstrapping key BK = (B$K_0$, B$K_1$,..., B$K_{n-1}$), where B$K_i$ $\in$ ${GGSW}_{\overrightarrow{S^,},\sigma}^{\beta,l}$ is a GGSW encryption of the secret LWE key bit $s_i$ under the GLWE secret key $\overrightarrow{S^,}$. This key is used as input to the bootstrapping operation.
+
+\subsection{Modulus switching}
+This is the first operation during the bootstrapping operation. The polynomials we manipulate in TFHE are modulo $x^N+1$, so they can contain only N coefficients. In practice, N is way smaller than q (i.e. N = $2^{10}$ and q = $2^{32}$), so we need to find a way to compress the information modulo to a way smaller space: for this, we will use the modulus switching. 
+
+	\begin{align*}
+    c &= (a_0, a_1, a_2, a_3, b) \in \Z_q^{n+1}  --> \Tilde{c} = (\Tilde{a_0}, \Tilde{a_1}, \Tilde{a_2}, \Tilde{a_3}, \Tilde{b}) \in \Z_{2N}^{n+1} 
+	\end{align*}
+
+\subsection{Blind rotation}
+This is the second operation during the bootstrapping operation. We use the output of the modulus switching to put the information in the exponent of X. This is done by performing a blind rotation, taking as input a trivial GLWE encryption of the LUT polynomial, that we will note by V, all the elements of $\Tilde{c} = (\Tilde{a_0}, \Tilde{a_1}, \Tilde{a_2}, \Tilde{a_3}, \Tilde{b})$ and bootstrapping key.
+
+The blind rotation is done as follows:
+
+\begin{itemize}
+  \item Initialize the blind rotation by multiplying the trivial GLWE encryption of V times $X^{-b}$ (rotation)
+  \item Pass the trivial encryption of $V.X^{-b} =V_0$ as input to a first CMux: the CMux uses as a selector the GGSW encryption of the bit $s_0$ of the LWE secret key and as options $V_0$ and $V_0.X^{\Tilde{a_0}}$. This step outputs a GLWE encryption of $V_1 = V_0.X^{\Tilde{a_0}s_0}$.
+  \item Pass the GLWE encryption of $V_1$ o a second CMux: the CMux uses as a selector the GGSW encryption of the bit $s_1$ of the LWE secret key and as options $V_1$ and $V_1.X^{\Tilde{a_1}}$. And so on until a total of n CMuxes
+\end{itemize}
+
+The result of this blind rotation is a GLWE encryption of:
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=1.1\columnwidth]{fig/blind_1.png}
+		\caption{Blind rotation}
+		\label{fig:blind_1}
+	\end{figure}
+
+\subsection{Sample extraction}
+This is the third operation during the bootstrapping operation. The result of the blind rotation is a GLWE encryption of $V.X^{-(\Tilde{\bigtriangleup}m+\Tilde{e})}$. The constant coefficient is our reading position, and we "homomorphically read" what is inside the constant coefficient by extracting it as an LWE ciphertext via sample extraction. 
+\subsection{Key switching}
+This is the final operation during the bootstrapping operation.
+To go back from the new LWE secret key $\overrightarrow{s^,}$ to the original LWE secret key $\overrightarrow{s}$, an LWE-to-LWE key switching is performed.
+
+
+	\begin{figure}[H]
+		\centering
+	\includegraphics[width=1.1\columnwidth]{fig/boot_strapping.png}
+		\caption{Bootstrapping}
+		\label{fig:boot_strapping}
+	\end{figure}
 
 \end{document}
