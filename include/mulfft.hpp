@@ -276,6 +276,35 @@ inline void PolyMulNtt(Polynomial<P> &res, const Polynomial<P> &a,
     for (int i = 0; i < P::n; i++) ntta[i] *= nttb[i];
     TwistNTT<P>(res, ntta);
 }
+template <class P>
+inline void PolyMulNaive(Polynomial<P> &res, const Polynomial<P> &a,
+                         const Polynomial<P> &b)
+{
+    for (int i = 0; i < P::n; i++) {
+        typename P::T ri = 0;
+        for (int j = 0; j <= i; j++)
+            ri += static_cast<typename std::make_signed<typename P::T>::type>(
+                      a[j]) *
+                  b[i - j];
+        for (int j = i + 1; j < P::n; j++)
+            ri -= static_cast<typename std::make_signed<typename P::T>::type>(
+                      a[j]) *
+                  b[P::n + i - j];
+        res[i] = ri;
+    }
+}
+
+template <class P>
+inline void PolyMulFFT(Polynomial<P> &res, const Polynomial<P> &a,
+                       const Polynomial<P> &b)
+{
+    alignas(64) PolynomialInFD<P> ffta;
+    TwistIFFT<P>(ffta, a);
+    alignas(64) PolynomialInFD<P> fftb;
+    TwistIFFT<P>(fftb, b);
+    MulInFD<P::n>(ffta, fftb);
+    TwistFFT<P>(res, ffta);
+}
 
 
 template <class P>
@@ -283,56 +312,13 @@ inline void PolyMul(Polynomial<P> &res, const Polynomial<P> &a,
                     const Polynomial<P> &b)
 {
     if constexpr (std::is_same_v<typename P::T, uint32_t>) {
-        alignas(64) PolynomialInFD<P> ffta;
-        TwistIFFT<P>(ffta, a);
-        alignas(64) PolynomialInFD<P> fftb;
-        TwistIFFT<P>(fftb, b);
-        MulInFD<P::n>(ffta, fftb);
-        TwistFFT<P>(res, ffta);
-        // alignas(64) PolynomialInFD<P> fftres;
-        // MulInFD<P::n>(fftres, ffta, fftb);
-        // TwistFFT<P>(res, fftres);
+        PolyMulFFT<P>(res, a, b);
     }
     else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
-        // Naieve
-        // for (int i = 0; i < P::n; i++) {
-        //     typename P::T ri = 0;
-        //     for (int j = 0; j <= i; j++)
-        //         ri +=
-        //             static_cast<typename std::make_signed<typename
-        //             P::T>::type>(
-        //                 a[j]) *
-        //             b[i - j];
-        //     for (int j = i + 1; j < P::n; j++)
-        //         ri -=
-        //             static_cast<typename std::make_signed<typename
-        //             P::T>::type>(
-        //                 a[j]) *
-        //             b[P::n + i - j];
-        //     res[i] = ri;
-        // }
-        PolynomialNTT<P> ntta, nttb;
-        TwistINTT<P>(ntta, a);
-        TwistINTT<P>(nttb, b);
-        for (int i = 0; i < P::n; i++) ntta[i] *= nttb[i];
-        TwistNTT<P>(res, ntta);
+        PolyMulNtt<P>(res, a, b);
     }
     else {
-        // Naieve
-        for (int i = 0; i < P::n; i++) {
-            typename P::T ri = 0;
-            for (int j = 0; j <= i; j++)
-                ri +=
-                    static_cast<typename std::make_signed<typename P::T>::type>(
-                        a[j]) *
-                    b[i - j];
-            for (int j = i + 1; j < P::n; j++)
-                ri -=
-                    static_cast<typename std::make_signed<typename P::T>::type>(
-                        a[j]) *
-                    b[P::n + i - j];
-            res[i] = ri;
-        }
+        PolyMulNaive<P>(res, a, b);
     }
 }
 
@@ -352,23 +338,7 @@ inline void PolyMulRescaleUnsigned(Polynomial<P> &res,
     //     static_assert(false_v<typename P::T>, "Undefined PolyMul!");
 }
 
-template <class P>
-inline void PolyMulNaive(Polynomial<P> &res, const Polynomial<P> &a,
-                         const Polynomial<P> &b)
-{
-    for (int i = 0; i < P::n; i++) {
-        typename P::T ri = 0;
-        for (int j = 0; j <= i; j++)
-            ri += static_cast<typename std::make_signed<typename P::T>::type>(
-                      a[j]) *
-                  b[i - j];
-        for (int j = i + 1; j < P::n; j++)
-            ri -= static_cast<typename std::make_signed<typename P::T>::type>(
-                      a[j]) *
-                  b[P::n + i - j];
-        res[i] = ri;
-    }
-}
+
 
 template <class P>
 std::unique_ptr<std::array<PolynomialInFD<P>, 2 * P::n>> XaittGen()
