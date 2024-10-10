@@ -7,8 +7,8 @@ namespace TFHEpp {
 template <class P>
 TRLWE<P> trlweSymEncryptZero(const double alpha, const Key<P> &key)
 {
-    std::uniform_int_distribution<typename P::T> Torusdist(
-        0, std::numeric_limits<typename P::T>::max());
+    auto numeric_limit = std::numeric_limits<typename P::T>::max();
+    std::uniform_int_distribution<typename P::T> Torusdist(0, numeric_limit);
     TRLWE<P> c;
     for (typename P::T &i : c[P::k]) i = ModularGaussian<P>(0, alpha);
     for (int k = 0; k < P::k; k++) {
@@ -25,8 +25,8 @@ TRLWE<P> trlweSymEncryptZero(const double alpha, const Key<P> &key)
 template <class P>
 TRLWE<P> trlweSymEncryptZero(const uint eta, const Key<P> &key)
 {
-    std::uniform_int_distribution<typename P::T> Torusdist(
-        0, std::numeric_limits<typename P::T>::max());
+    auto numeric_limit = std::numeric_limits<typename P::T>::max();
+    std::uniform_int_distribution<typename P::T> Torusdist(0, numeric_limit);
     alignas(64) TRLWE<P> c;
     for (typename P::T &i : c[P::k])
         i = (CenteredBinomial<P>(eta) << std::numeric_limits<P>::digits) / P::q;
